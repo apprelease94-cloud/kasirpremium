@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Super Admin Control - Sistem Manajemen Cafe</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    :root {
+      --primary: #ea580c;
+      --sidebar-w: 260px;
+    }
+    body {
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .sidebar {
+      background: #0f172a;
+      min-height: 100vh;
+      color: white;
+    }
+    .nav-link {
+      color: #94a3b8;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: #1e293b;
+      color: #f8fafc;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .role-badge-kasir {
+      background: #dbeafe;
+      color: #1e40af;
+      font-weight: 600;
+    }
+    .role-badge-dapur {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 600;
+    }
+    .thermal-preview-container {
+      background: #334155;
+      padding: 20px;
+      border-radius: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .thermal-paper {
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      padding: 15px;
+      color: #000;
+      transition: all 0.2s;
+    }
+    .banner-preview-box {
+      border: 2px dashed #10b981;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      background: #f0fdf4;
+      text-align: center;
+    }
+    .gallery-thumb {
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .gallery-thumb:hover {
+      border-color: #10b981;
+      transform: scale(1.03);
+    }
+    .receipt-modal-body {
+      background: #ffffff;
+      color: #000;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      padding: 16px;
+      border-radius: 12px;
+      line-height: 1.35;
+    }
+    .menu-thumb-preview {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #f1f5f9;
+    }
+    .menu-admin-card {
+      transition: all 0.2s ease-in-out;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+    .menu-admin-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .menu-admin-img {
+      height: 140px;
+      width: 100%;
+      object-fit: cover;
+    }
+    @media (max-width: 576px) {
+      .menu-admin-img {
+        height: 120px;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar Navigasi -->
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3 collapse d-md-block" id="sidebarMenu">
+      <div class="d-flex align-items-center gap-2 mb-4 px-2">
+        <i class="bi bi-shield-lock-fill text-warning fs-3"></i>
+        <div>
+          <h6 class="fw-bold mb-0 text-white">Super Admin Cafe</h6>
+          <small class="text-secondary" style="font-size:0.75rem;">Pemegang Kontrol Penuh</small>
+        </div>
+      </div>
+
+      <div class="nav flex-column mb-auto">
+        <a href="#sectionOverview" class="nav-link active" data-bs-toggle="tab">
+          <i class="bi bi-grid-fill me-2"></i> Ringkasan Sistem
+        </a>
+        <a href="#sectionSuccessBanner" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-image-fill me-2 text-success"></i> Banner Terima Kasih
+        </a>
+        <a href="#sectionOrders" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-receipt me-2 text-info"></i> Semua Transaksi & Struk
+        </a>
+        <a href="#sectionReceiptSettings" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-printer-fill me-2 text-danger"></i> Format Struk Thermal
+        </a>
+        <a href="#sectionPaymentSettings" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-credit-card-2-front-fill me-2 text-warning"></i> Rekening & QRIS
+        </a>
+        <a href="#sectionStaff" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-people-fill me-2"></i> Akses Gmail Staff
+        </a>
+        <a href="#sectionMenu" class="nav-link" data-bs-toggle="tab">
+          <i class="bi bi-cup-hot-fill me-2"></i> Kelola Menu Cafe
+        </a>
+        <a href="qr-generator.html" class="nav-link">
+          <i class="bi bi-qr-code me-2"></i> Barcode Standee <i class="bi bi-box-arrow-up-right small"></i>
+        </a>
+      </div>
+
+      <div class="pt-4 mt-4 border-top border-secondary">
+        <div class="d-flex align-items-center gap-2 mb-3 px-2">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60" class="rounded-circle" width="36" height="36" alt="Avatar">
+          <div class="overflow-hidden">
+            <div class="small fw-bold text-white text-truncate" id="adminEmailDisplay">admin@gmail.com</div>
+            <span class="badge bg-danger text-white" style="font-size:0.65rem;">Super Admin Tunggal</span>
+          </div>
+        </div>
+        <button class="btn btn-outline-danger btn-sm w-100 rounded-pill" onclick="logoutAdmin()">
+          <i class="bi bi-box-arrow-left me-1"></i> Keluar
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      
+      <!-- Top Mobile Navbar -->
+      <div class="d-md-none d-flex justify-content-between align-items-center mb-3 p-3 bg-white rounded-3 shadow-sm">
+        <h5 class="fw-bold mb-0">Panel Super Admin</h5>
+        <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        
+        <!-- TAB 1: OVERVIEW -->
+        <div class="tab-pane fade show active" id="sectionOverview">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Pusat Kendali Super Admin</h3>
+              <p class="text-muted small mb-0">Hanya Super Admin yang berhak mengatur seluruh sistem, staf kasir/dapur, rekening & struk.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="kitchen.html" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill">
+                <i class="bi bi-cup-hot me-1"></i> Layar Dapur
+              </a>
+              <a href="cashier.html" target="_blank" class="btn btn-outline-success btn-sm rounded-pill">
+                <i class="bi bi-cash me-1"></i> Layar Kasir
+              </a>
+              <a href="order.html?table=5" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill">
+                <i class="bi bi-phone me-1"></i> Mode Tamu
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Stats Cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+              <div class="stat-card">
+                <span class="text-muted small">Total Omset Keseluruhan</span>
+                <h4 class="fw-bold text-success mb-0" id="statOmset">Rp 0</h4>
+                <small class="text-secondary" id="statOrderDone">0 Pesanan selesai</small>
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="stat-card">
+                <span class="text-muted small">Pesanan Aktif Dapur</span>
+                <h4 class="fw-bold text-warning mb-0" id="statActiveOrders">0</h4>
+                <small class="text-secondary">Sedang dimasak</small>
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="stat-card">
+                <span class="text-muted small">Staf Kasir & Dapur</span>
+                <h4 class="fw-bold text-primary mb-0" id="statTotalStaff">2</h4>
+                <small class="text-secondary">Dikelola Super Admin</small>
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="stat-card">
+                <span class="text-muted small">Total Item Menu Cafe</span>
+                <h4 class="fw-bold text-dark mb-0" id="statTotalMenu">11</h4>
+                <small class="text-secondary">Makanan & Minuman</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Orders Preview -->
+          <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0">Aktivitas Pemesanan Terkini</h5>
+              <span class="badge bg-success-subtle text-success"><i class="bi bi-circle-fill" style="font-size:7px;"></i> Real-time</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Meja</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Metode</th>
+                    <th>Status</th>
+                    <th>Aksi Cek Struk</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewOrderList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SETTING BANNER TERIMA KASIH DENGAN FITUR UPLOAD FILE & PENCARIAN WEB GAMBAR -->
+        <div class="tab-pane fade" id="sectionSuccessBanner">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Banner & Gambar Terima Kasih (Setelah Bayar)</h3>
+              <p class="text-muted small mb-0">Upload foto langsung dari komputer / HP atau gunakan pencarian web gambar cafe otomatis.</p>
+            </div>
+            <button class="btn btn-success fw-bold rounded-pill text-white shadow-sm" onclick="saveSuccessBannerSettings()">
+              <i class="bi bi-floppy-fill me-1"></i> Simpan Banner & Gambar
+            </button>
+          </div>
+
+          <div class="row g-4">
+            <!-- Form Setting Banner -->
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-pencil-square text-success me-2"></i> Kustomisasi Pesan & Gambar</h5>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Judul Notifikasi Berhasil</label>
+                  <input type="text" id="setBannerTitle" class="form-control" placeholder="Pembayaran Berhasil! Terima Kasih" oninput="updateBannerLivePreview()">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Pesan Utama (Ucapan)</label>
+                  <textarea id="setBannerMsg" class="form-control" rows="2" placeholder="Pesanan Anda telah diterima dan langsung masuk ke antrean dapur." oninput="updateBannerLivePreview()"></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Pesan Tambahan (Instruksi Meja)</label>
+                  <input type="text" id="setBannerSubMsg" class="form-control" placeholder="Silakan duduk santai di meja Anda, pesanan lezat akan segera diantar!" oninput="updateBannerLivePreview()">
+                </div>
+
+                <!-- OPSI UPLOAD GAMBAR DARI PERANGKAT & CARI DI WEB -->
+                <div class="p-3 bg-light rounded-3 border mb-3">
+                  <label class="form-label small fw-bold text-dark d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-image me-1 text-success"></i> Pilih Sumber Gambar Banner:</span>
+                  </label>
+                  
+                  <div class="d-flex gap-2 mb-2">
+                    <!-- Upload File Lokal -->
+                    <label class="btn btn-outline-success btn-sm rounded-pill fw-semibold flex-grow-1" for="fileUploadInput">
+                      <i class="bi bi-upload me-1"></i> Upload dari Laptop / HP
+                    </label>
+                    <input type="file" id="fileUploadInput" accept="image/*" style="display:none;" onchange="handleImageFileUpload(event)">
+
+                    <!-- Pencarian Web Gambar -->
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold flex-grow-1" onclick="openWebSearchModal()">
+                      <i class="bi bi-search me-1"></i> Cari Gambar di Web
+                    </button>
+                  </div>
+
+                  <div class="mt-2">
+                    <label class="small text-muted" style="font-size:0.75rem;">Atau masukkan URL gambar langsung:</label>
+                    <input type="url" id="setBannerImgUrl" class="form-control form-control-sm" placeholder="https://..." oninput="updateBannerLivePreview()">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Teks Sosial Media / Promo Tambahan</label>
+                  <input type="text" id="setBannerSocial" class="form-control" placeholder="Follow Instagram kami @kopimiecafe" oninput="updateBannerLivePreview()">
+                </div>
+
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input" type="checkbox" id="setBannerShowImg" checked onchange="updateBannerLivePreview()">
+                  <label class="form-check-label small fw-bold" for="setBannerShowImg">Tampilkan Gambar di Layar HP Pelanggan</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Preview Tampilan HP Tamu -->
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm h-100">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-phone text-primary me-2"></i> Live Preview di HP Pelanggan</h5>
+                
+                <div class="banner-preview-box" id="bannerLivePreviewBox">
+                  <div class="d-inline-flex p-2 bg-success text-white rounded-circle mb-2">
+                    <i class="bi bi-check-lg fs-4"></i>
+                  </div>
+                  <h5 class="fw-bold text-success mb-1" id="prevBannerTitle">Pembayaran Berhasil! Terima Kasih</h5>
+                  <p class="small text-muted mb-2" id="prevBannerMsg">Pesanan Anda telah diterima dan langsung masuk ke antrean koki dapur & barista.</p>
+                  
+                  <div id="prevBannerImgWrapper" class="my-2" style="background:#f1f5f9; border-radius:12px; overflow:hidden;">
+                    <img id="prevBannerImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80" alt="Preview" style="max-height:160px; width:100%; object-fit:cover; border-radius:12px;" onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80'">
+                  </div>
+
+                  <div class="small fw-semibold text-secondary mt-2" id="prevBannerSubMsg">Silakan duduk santai di meja Anda, pesanan lezat akan segera diantar!</div>
+                  <div class="small text-muted fst-italic mt-1" id="prevBannerSocial" style="font-size:0.75rem;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SEMUA TRANSAKSI & CEK ISI STRUK PEMBELIAN APA SAJA DI DALAMNYA -->
+        <div class="tab-pane fade" id="sectionOrders">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Semua Riwayat Transaksi & Detail Isi Struk</h3>
+              <p class="text-muted small mb-0">Super Admin dapat memeriksa setiap detail transaksi dan isi struk pembelian yang telah terjadi.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <select id="adminOrderFilterSelect" class="form-select form-select-sm w-auto" onchange="renderAllOrders()">
+                <option value="all">Semua Status</option>
+                <option value="Selesai">Hanya Pesanan Selesai</option>
+                <option value="aktif">Hanya Pesanan Aktif</option>
+              </select>
+              <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="loadAllData()">
+                <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-4 border shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID Order</th>
+                    <th>Meja</th>
+                    <th>Pelanggan</th>
+                    <th>Detail Menu Singkat</th>
+                    <th>Total Bayar</th>
+                    <th>Metode</th>
+                    <th>Status</th>
+                    <th>Periksa Struk</th>
+                  </tr>
+                </thead>
+                <tbody id="allOrdersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SETTING STRUK THERMAL PRINTER (SUPER ADMIN ONLY) -->
+        <div class="tab-pane fade" id="sectionReceiptSettings">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Pengaturan Format Struk Kertas (Khusus Super Admin)</h3>
+              <p class="text-muted small mb-0">Kasir tidak dapat mengubah bagian ini. Super Admin menentukan ukuran font, lebar kertas (58mm/80mm), dan nama toko.</p>
+            </div>
+            <button class="btn btn-danger fw-bold rounded-pill text-white shadow-sm" onclick="saveReceiptSettings()">
+              <i class="bi bi-floppy-fill me-1"></i> Simpan Format Struk
+            </button>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-sliders text-danger me-2"></i> Konfigurasi Kertas & Teks</h5>
+
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="form-label small fw-bold">Lebar Kertas Printer</label>
+                    <select id="rcpPaperWidth" class="form-select" onchange="updateReceiptLivePreview()">
+                      <option value="58mm">58 mm (Printer Mini / Portable Bluetooth)</option>
+                      <option value="80mm">80 mm (Printer Besar Kasir / POS LAN/WiFi)</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small fw-bold">Ukuran Font Teks Struk</label>
+                    <select id="rcpFontSize" class="form-select" onchange="updateReceiptLivePreview()">
+                      <option value="10px">10 px (Kecil & Padat)</option>
+                      <option value="11px">11 px (Standar Rekomendasi)</option>
+                      <option value="12px">12 px (Sedang / Jelas)</option>
+                      <option value="13px">13 px (Besar)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Nama Toko / Cafe (Header)</label>
+                  <input type="text" id="rcpCafeName" class="form-control" placeholder="Contoh: KOPI & MIE CAFE" oninput="updateReceiptLivePreview()">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Sub-Header / Slogan</label>
+                  <input type="text" id="rcpHeaderNote" class="form-control" placeholder="RESTO & CAFE SPECIALIST" oninput="updateReceiptLivePreview()">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Alamat Lengkap Cafe</label>
+                  <input type="text" id="rcpAddress" class="form-control" placeholder="Jl. Raya Kuliner Nusantara No. 88" oninput="updateReceiptLivePreview()">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Nomor Kontak / WhatsApp</label>
+                  <input type="text" id="rcpPhone" class="form-control" placeholder="0812-3456-7890" oninput="updateReceiptLivePreview()">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Catatan Kaki (Footer Ucapan Terima Kasih)</label>
+                  <textarea id="rcpFooterNote" class="form-control" rows="2" placeholder="Terima kasih atas kunjungan Anda!" oninput="updateReceiptLivePreview()"></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Informasi WiFi Cafe (Tampil di Bawah Struk)</label>
+                  <input type="text" id="rcpWifiInfo" class="form-control" placeholder="Password Wifi: cafe-enak-88" oninput="updateReceiptLivePreview()">
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border">
+                  <div class="form-check form-switch mb-1">
+                    <input class="form-check-input" type="checkbox" id="rcpAutoPrint" checked>
+                    <label class="form-check-label fw-bold small text-dark" for="rcpAutoPrint">
+                      Otomatis Cetak Struk Saat Printer Kasir Terhubung
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                  <h5 class="fw-bold mb-0"><i class="bi bi-eye text-primary me-2"></i> Live Simulasi Hasil Cetak</h5>
+                  <span class="badge bg-dark" id="previewPaperBadge">58mm</span>
+                </div>
+
+                <div class="thermal-preview-container flex-grow-1 align-items-center">
+                  <div class="thermal-paper" id="paperReceiptSim"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SETTING PAYMENT GATEWAY & QRIS OTOMATIS (SUPER ADMIN ONLY) -->
+        <div class="tab-pane fade" id="sectionPaymentSettings">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Pengaturan Payment Gateway & QRIS Webhook</h3>
+              <p class="text-muted small mb-0">Atur integrasi Midtrans, Xendit, Tripay, DOKU, atau Bank Transfer agar verifikasi pembayaran QRIS otomatis terverifikasi (Status: PAID).</p>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="openSimulatePaymentModal()">
+                <i class="bi bi-play-circle-fill me-1"></i> Uji Coba Webhook (Simulasi)
+              </button>
+              <button class="btn btn-warning fw-bold rounded-pill text-white shadow-sm" onclick="savePaymentSettings()" style="background:#ea580c; border:none;">
+                <i class="bi bi-floppy-fill me-1"></i> Simpan Konfigurasi Gateway
+              </button>
+            </div>
+          </div>
+
+          <!-- DIAGRAM PIPELINE VERIFIKASI QRIS -->
+          <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-diagram-3-fill text-danger me-2"></i> Alur Tahapan Otomatisasi Pembayaran QRIS:</h6>
+            <div class="row g-2 text-center text-md-start small">
+              <div class="col-12 col-md-2 p-2 bg-light rounded-3 border">
+                <span class="badge bg-primary mb-1">1. Gateway</span>
+                <div class="fw-bold">Payment Gateway</div>
+                <small class="text-muted">Midtrans / Xendit / Tripay</small>
+              </div>
+              <div class="col-12 col-md-2 p-2 bg-light rounded-3 border">
+                <span class="badge bg-info text-dark mb-1">2. Webhook</span>
+                <div class="fw-bold">Kirim Webhook</div>
+                <small class="text-muted">Notifikasi instan ke server</small>
+              </div>
+              <div class="col-12 col-md-2 p-2 bg-light rounded-3 border">
+                <span class="badge bg-secondary mb-1">3. Signature</span>
+                <div class="fw-bold">Verifikasi Signature</div>
+                <small class="text-muted">Validasi SHA512 / Token</small>
+              </div>
+              <div class="col-12 col-md-2 p-2 bg-light rounded-3 border">
+                <span class="badge bg-warning text-dark mb-1">4. Validasi</span>
+                <div class="fw-bold">Cek Order & Nominal</div>
+                <small class="text-muted">Order ID & Total Tagihan</small>
+              </div>
+              <div class="col-12 col-md-2 p-2 bg-light rounded-3 border">
+                <span class="badge bg-dark mb-1">5. Status</span>
+                <div class="fw-bold">Cek Settlement</div>
+                <small class="text-muted">Status transaksi sukses</small>
+              </div>
+              <div class="col-12 col-md-2 p-2 bg-success-subtle text-success rounded-3 border border-success">
+                <span class="badge bg-success mb-1">6. Selesai</span>
+                <div class="fw-bold">Status: PAID</div>
+                <small class="text-success">Langsung dimasak koki!</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- Kolom 1: Konfigurasi Payment Gateway Provider & Keys -->
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-success fs-4"></i>
+                    <h5 class="fw-bold mb-0">Pilihan Payment Gateway Indonesia</h5>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="setGatewayProd">
+                    <label class="form-check-label small fw-bold" for="setGatewayProd">Mode Production</label>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Pilih Provider Payment Gateway</label>
+                  <select id="setGatewayProvider" class="form-select fw-semibold" onchange="updateGatewayHints()">
+                    <option value="midtrans">Midtrans (QRIS, GoPay, ShopeePay, Virtual Account)</option>
+                    <option value="xendit">Xendit (QRIS Otomatis, e-Wallet, VA Bank)</option>
+                    <option value="tripay">Tripay (Payment Gateway Resto Murah & Cepat)</option>
+                    <option value="doku">DOKU Payment Gateway (QRIS & Kartu)</option>
+                    <option value="manual">QRIS Statis / Rekening Manual (Tanpa Webhook Otomatis)</option>
+                  </select>
+                  <small class="text-muted" id="gatewayProviderHint">Midtrans menggunakan ServerKey untuk verifikasi signature SHA512 webhook.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Server Key / API Secret Key</label>
+                  <input type="text" id="setGatewayServerKey" class="form-control font-monospace" placeholder="SB-Mid-server-xxxx atau xnd_production_xxxx">
+                  <small class="text-muted" style="font-size:0.75rem;">Digunakan server untuk memverifikasi keaslian webhook kiriman gateway.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Client Key (Publik / Frontend)</label>
+                  <input type="text" id="setGatewayClientKey" class="form-control font-monospace" placeholder="SB-Mid-client-xxxx">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Webhook / Callback URL Cafe Anda</label>
+                  <div class="input-group">
+                    <input type="text" id="webhookUrlDisplay" class="form-control font-monospace small" readonly value="http://localhost:3000/api/payment/webhook">
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyWebhookUrl()">
+                      <i class="bi bi-clipboard"></i> Salin
+                    </button>
+                  </div>
+                  <small class="text-muted" style="font-size:0.75rem;">Tempel URL ini pada menu Dashboard Webhook / Callback provider Anda.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Webhook Secret Verification Token (Opsional)</label>
+                  <input type="text" id="setGatewayWebhookSecret" class="form-control font-monospace" placeholder="cafe_webhook_secret_key">
+                </div>
+              </div>
+            </div>
+
+            <!-- Kolom 2: Pengaturan QRIS Tampilan & Rekening Backup -->
+            <div class="col-lg-6">
+              <div class="bg-white p-4 rounded-4 border shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-qr-code text-danger fs-4"></i>
+                    <h5 class="fw-bold mb-0">Tampilan QRIS di Layar Tamu</h5>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="setQrisEnabled" checked>
+                    <label class="form-check-label small fw-bold" for="setQrisEnabled">Aktifkan QRIS</label>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Nama Merchant Cafe (Muncul di QRIS)</label>
+                  <input type="text" id="setQrisMerchant" class="form-control" placeholder="Contoh: KOPI & MIE CAFE JAKARTA">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">NMID (National Merchant ID)</label>
+                  <input type="text" id="setQrisNmid" class="form-control" placeholder="ID1020304050607">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">URL Gambar Barcode QRIS / QR Dinamis</label>
+                  <div class="d-flex gap-2 mb-2">
+                    <input type="url" id="setQrisUrl" class="form-control" placeholder="https://api.qrserver.com/..." oninput="updateQrisLivePreview(this.value)">
+                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap rounded-3" onclick="resetDefaultQris()">
+                      <i class="bi bi-arrow-counterclockwise"></i> Default
+                    </button>
+                  </div>
+                  <!-- PREVIEW QRIS LIVE -->
+                  <div class="p-2 border rounded-3 bg-light text-center" style="max-width: 170px; margin: 0 auto;">
+                    <img id="qrisLivePreviewImg" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020101021226600016ID.CO.QRIS.WWW01189360099900000000010215ID10203040506075204581253033605802ID5925KOPI%20MIE%20CAFE%20INDONESIA6007JAKARTA6304ABCD" class="img-fluid rounded border bg-white p-1" alt="Preview QRIS" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=QRIS_DEMO_CAFE'">
+                    <div class="small text-muted mt-1" style="font-size:0.7rem;">Preview QRIS Tamu</div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Petunjuk Pembayaran QRIS Pelanggan</label>
+                  <textarea id="setQrisNotes" class="form-control" rows="2"></textarea>
+                </div>
+
+                <hr>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <h6 class="fw-bold mb-0"><i class="bi bi-bank2 text-primary me-2"></i> Cadangan Transfer Bank (Manual)</h6>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="setBankEnabled" checked>
+                    <label class="form-check-label small fw-bold" for="setBankEnabled">Aktifkan</label>
+                  </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                  <div class="col-6">
+                    <label class="form-label small fw-bold">Nama Bank</label>
+                    <input type="text" id="setBankName" class="form-control" placeholder="BCA / Mandiri">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small fw-bold">No. Rekening</label>
+                    <input type="text" id="setBankAccount" class="form-control" placeholder="8730-1928-33">
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label small fw-bold">Atas Nama Pemilik Rekening</label>
+                  <input type="text" id="setBankHolder" class="form-control" placeholder="PT KOPI RESTO NUSANTARA">
+                </div>
+              </div>
+            </div>
+
+            <!-- Kolom 3: LOG AUDIT WEBHOOK REAL-TIME (SUPER ADMIN) -->
+            <div class="col-12">
+              <div class="bg-white p-4 rounded-4 border shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h5 class="fw-bold mb-1"><i class="bi bi-journal-text text-danger me-2"></i> Log Audit Webhook Pembayaran QRIS Masuk</h5>
+                    <small class="text-muted">Memantau apakah notifikasi pembayaran dari Midtrans/Xendit/Tripay telah diverifikasi kebenarannya.</small>
+                  </div>
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="loadWebhookLogs()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh Log Webhook
+                  </button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-sm table-hover align-middle mb-0 font-monospace small">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Waktu</th>
+                        <th>Provider</th>
+                        <th>Order ID</th>
+                        <th>Nominal</th>
+                        <th>Status Transaksi</th>
+                        <th>Hasil Verifikasi Server</th>
+                        <th>IP Pengirim</th>
+                      </tr>
+                    </thead>
+                    <tbody id="webhookAuditTableBody">
+                      <tr><td colspan="7" class="text-center text-muted py-3">Belum ada riwayat webhook tercatat.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: STAFF & GMAIL ACCESS MANAGEMENT -->
+        <div class="tab-pane fade" id="sectionStaff">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Manajemen Akses Gmail Staff</h3>
+              <p class="text-muted small mb-0">Super Admin mendaftarkan akun Google (Gmail) untuk staf kasir dan koki dapur cafe.</p>
+            </div>
+            <button class="btn btn-warning fw-bold rounded-pill text-white" data-bs-toggle="modal" data-bs-target="#modalAddStaff" style="background:#ea580c; border:none;">
+              <i class="bi bi-person-plus-fill me-1"></i> Tambah Akses Gmail
+            </button>
+          </div>
+
+          <div class="bg-white p-4 rounded-4 border shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nama Staff</th>
+                    <th>Email Google (Gmail)</th>
+                    <th>Peran / Hak Akses</th>
+                    <th>Akses Halaman</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="staffTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: KELOLA MENU & KATEGORI CAFE -->
+        <div class="tab-pane fade" id="sectionMenu">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 class="fw-bold text-dark mb-1">Daftar Menu & Kategori Cafe</h3>
+              <p class="text-muted small mb-0">Super Admin dapat menambah/edit kategori, mengubah menu, harga, waktu masak, serta menandai menu terlaris/favorit.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-outline-dark btn-sm fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#modalCategoryManage">
+                <i class="bi bi-tags-fill me-1"></i> Kelola Kategori
+              </button>
+              <button class="btn btn-warning fw-bold rounded-pill text-white" onclick="openAddMenuModal()" style="background:#ea580c; border:none;">
+                <i class="bi bi-plus-circle me-1"></i> Tambah Menu Baru
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Kategori & Tab Menu Favorit -->
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="d-flex gap-2 overflow-x-auto pb-1" id="adminCategoryFilterBar" style="scrollbar-width:none;">
+              <!-- Diisi Dinamis oleh JS -->
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="filterOnlyPopular" onchange="renderMenuAdmin()">
+              <label class="form-check-label small fw-bold text-dark" for="filterOnlyPopular">
+                ⭐ Tampilkan Hanya Menu Favorit
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-4 border shadow-sm">
+            <div class="row g-3" id="adminMenuList"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL: PENCARIAN WEB GAMBAR PRESET (UNSPLASH CURATED) -->
+<div class="modal fade" id="modalWebSearch" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold" id="webSearchModalTitle"><i class="bi bi-search text-primary me-2"></i> Pencarian Gambar Web Cafe & Resto</h5>
+          <small class="text-muted" id="webSearchModalSubtitle">Pilih foto HD berkualitas untuk hidangan menu atau banner terima kasih</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-2">
+          <input type="text" id="webSearchKeywordInput" class="form-control" placeholder="Ketik kata kunci: mie, dimsum, kopi, matcha, cake, ayam, cafe..." onkeydown="if(event.key==='Enter') executeWebSearch()">
+          <button class="btn btn-primary px-4 fw-bold" onclick="executeWebSearch()">
+            <i class="bi bi-search me-1"></i> Cari
+          </button>
+        </div>
+
+        <!-- Quick filter tag buttons untuk kemudahan pengguna di HP & Desktop -->
+        <div class="d-flex gap-1 overflow-x-auto pb-2 mb-3" style="scrollbar-width:none;">
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('mie')">🍜 Mie Pedas</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('dimsum')">🥟 Dimsum</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('kopi')">☕ Kopi Latte</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('matcha')">🧋 Minuman</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('snack')">🍟 Camilan</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('nasi')">🍳 Nasi Goreng</button>
+          <button type="button" class="btn btn-sm btn-light border rounded-pill text-nowrap" onclick="quickTagSearch('cafe')">🏠 Suasana Cafe</button>
+        </div>
+
+        <div class="row g-3" id="webSearchResultsGrid" style="max-height: 380px; overflow-y: auto;">
+          <!-- Diisi JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CEK DETAIL STRUK TRANSAKSI SUPER ADMIN -->
+<div class="modal fade" id="modalAdminReceiptDetail" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 bg-dark text-white">
+      <div class="modal-header border-secondary pb-2">
+        <h5 class="modal-title fw-bold"><i class="bi bi-receipt text-warning me-2"></i> Detail Isi Struk Transaksi</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <div class="receipt-modal-body shadow-sm" id="adminReceiptModalContent"></div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-secondary w-100 rounded-pill small" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SIMULASI PENGUJIAN WEBHOOK PAYMENT GATEWAY -->
+<div class="modal fade" id="modalSimulatePayment" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold"><i class="bi bi-play-circle text-primary me-2"></i> Uji Coba Webhook Gateway (Simulasi)</h5>
+          <small class="text-muted">Simulasikan kiriman webhook dari Midtrans/Xendit/Tripay untuk memverifikasi pembayaran customer secara instan.</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formSimulateWebhook" onsubmit="executePaymentSimulation(event)">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Pilih Pesanan yang Sedang Menunggu Pembayaran</label>
+            <select id="simTargetOrderSelect" class="form-select font-monospace" onchange="autoFillSimAmount()" required>
+              <option value="">-- Pilih Order ID --</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Gateway Provider Pengirim Webhook</label>
+            <select id="simGatewaySelect" class="form-select">
+              <option value="midtrans">Midtrans (settlement)</option>
+              <option value="xendit">Xendit (PAID)</option>
+              <option value="tripay">Tripay (PAID)</option>
+              <option value="doku">DOKU (SUCCESS)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Nominal Pembayaran Diterima (Rp)</label>
+            <input type="number" id="simAmountInput" class="form-control" placeholder="Harus persis sama dengan total tagihan" required>
+            <small class="text-muted" style="font-size:0.75rem;">Server akan menolak jika nominal berbeda dengan total order.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Status Transaksi dari Gateway</label>
+            <select id="simStatusSelect" class="form-select">
+              <option value="settlement">settlement / paid (LUNAS)</option>
+              <option value="pending">pending (Belum Bayar)</option>
+              <option value="expire">expire / failed (Kedaluwarsa)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm">
+            <i class="bi bi-send-fill me-1"></i> Kirim Webhook Simulasi ke Server
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah Akses Gmail Staf -->
+<div class="modal fade" id="modalAddStaff" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Beri Akses Akun Gmail Staf</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAddStaff" onsubmit="submitNewStaff(event)">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Nama Staff</label>
+            <input type="text" id="staffNameInput" class="form-control" placeholder="Contoh: Sarah Barista" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Alamat Email Google (Gmail)</label>
+            <input type="email" id="staffEmailInput" class="form-control" placeholder="contoh@gmail.com" required>
+            <small class="text-muted" style="font-size:0.75rem;">Staf ini nantinya login menggunakan akun Google tersebut.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Peran Hak Akses</label>
+            <select id="staffRoleSelect" class="form-select fw-semibold">
+              <option value="kasir">💵 Kasir (Hanya Akses POS Transaksi, Tanpa Setting)</option>
+              <option value="dapur">👨‍🍳 Dapur & Barista (Hanya Antrean Masak, Tanpa Setting)</option>
+              <option value="super_admin">👑 Super Admin Tambahan (Akses Penuh Seluruh Sistem)</option>
+            </select>
+            <small class="text-muted" style="font-size:0.75rem;">Super Admin tambahan dapat ikut mengatur seluruh menu, staf, payment gateway, dan konfigurasi cafe.</small>
+          </div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold rounded-pill text-white mt-2" style="background:#ea580c; border:none;">
+            Simpan Hak Akses
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KELOLA KATEGORI MENU CAFE (TAMBAH & EDIT KATEGORI) -->
+<div class="modal fade" id="modalCategoryManage" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold"><i class="bi bi-tags-fill text-primary me-2"></i> Kelola Kategori Menu Cafe</h5>
+          <small class="text-muted">Tambah kategori baru atau ubah nama kategori yang sudah ada</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <!-- Form Tambah Kategori -->
+        <form id="formAddCategory" onsubmit="submitNewCategory(event)" class="mb-4 p-3 bg-light rounded-3 border">
+          <h6 class="fw-bold mb-2 small text-dark"><i class="bi bi-plus-circle-fill text-success me-1"></i> Tambah Kategori Baru:</h6>
+          <div class="row g-2">
+            <div class="col-4">
+              <label class="form-label small text-muted mb-1">Ikon / Emoji</label>
+              <input type="text" id="newCatIconInput" class="form-control text-center fs-5" value="🍽️" required>
+            </div>
+            <div class="col-8">
+              <label class="form-label small text-muted mb-1">Nama Kategori</label>
+              <input type="text" id="newCatNameInput" class="form-control" placeholder="Contoh: Dessert / Toast" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm w-100 fw-bold rounded-pill mt-2">
+            <i class="bi bi-plus-lg me-1"></i> Simpan Kategori
+          </button>
+        </form>
+
+        <!-- Daftar Kategori Aktif & Opsi Edit / Hapus -->
+        <h6 class="fw-bold mb-2 small text-dark"><i class="bi bi-list-check me-1"></i> Daftar Kategori Saat Ini:</h6>
+        <div id="categoryManageList" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
+          <!-- Diisi JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah & Edit Menu Cafe -->
+<div class="modal fade" id="modalAddMenu" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold" id="menuModalTitle"><i class="bi bi-plus-circle-fill text-warning me-2" style="color:#ea580c !important;"></i> Tambah Menu Baru Cafe</h5>
+          <small class="text-muted" id="menuModalSubtitle">Masukkan informasi menu, tentukan harga, estimasi waktu masak & upload foto atau cari di web.</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <form id="formAddMenu" onsubmit="submitSaveMenu(event)">
+          <input type="hidden" id="editMenuId" value="">
+          <div class="row g-3">
+            <!-- Kolom Input Teks -->
+            <div class="col-12 col-md-7">
+              <div class="mb-2">
+                <label class="form-label small fw-bold">Nama Menu Makanan / Minuman</label>
+                <input type="text" id="menuNameInput" class="form-control" placeholder="Contoh: Mie Iblis Level 3 / Matcha Latte" required>
+              </div>
+
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Kategori Menu</label>
+                  <select id="menuCategorySelect" class="form-select"></select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Harga Jual (Rp)</label>
+                  <input type="number" id="menuPriceInput" class="form-control" placeholder="18000" min="0" required>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Estimasi Masak (Menit)</label>
+                  <input type="number" id="menuPrepInput" class="form-control" value="10" min="1" max="60" required>
+                </div>
+                <div class="col-6">
+                  <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="menuHasLevel">
+                    <label class="form-check-label small fw-bold text-dark" for="menuHasLevel">
+                      🌶️ Ada Level Pedas
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="form-check form-switch p-2 bg-warning bg-opacity-10 border border-warning rounded-3">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" id="menuIsPopular">
+                  <label class="form-check-label small fw-bold text-dark" for="menuIsPopular">
+                    ⭐ Tandai sebagai Menu Terlaris / Favorit Pelanggan
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label small fw-bold">Deskripsi Singkat / Komposisi</label>
+                <textarea id="menuDescInput" class="form-control" rows="2" placeholder="Komposisi rasa, tingkat kegurihan, atau keistimewaan menu"></textarea>
+              </div>
+            </div>
+
+            <!-- Kolom Upload & Pencarian Web Gambar -->
+            <div class="col-12 col-md-5">
+              <div class="p-3 bg-light rounded-4 border h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <label class="form-label small fw-bold text-dark mb-2 d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-image-fill me-1 text-primary"></i> Foto / Gambar Menu</span>
+                    <span class="badge bg-secondary-subtle text-secondary" style="font-size:0.65rem;">Responsif Semua Device</span>
+                  </label>
+
+                  <!-- Preview Gambar Menu -->
+                  <div class="text-center mb-2">
+                    <img id="menuImgPreview" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60" class="menu-thumb-preview shadow-sm" alt="Preview Menu" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'">
+                  </div>
+
+                  <!-- Tombol Upload File Lokal & Cari Gambar di Web -->
+                  <div class="d-grid gap-2 mb-2">
+                    <label class="btn btn-outline-success btn-sm fw-bold rounded-pill" for="menuFileUploadInput">
+                      <i class="bi bi-upload me-1"></i> Upload dari Laptop / HP
+                    </label>
+                    <input type="file" id="menuFileUploadInput" accept="image/*" style="display:none;" onchange="handleMenuImageUpload(event)">
+
+                    <button type="button" class="btn btn-outline-primary btn-sm fw-bold rounded-pill" onclick="openWebSearchFor('menu')">
+                      <i class="bi bi-search me-1"></i> Cari Gambar di Web
+                    </button>
+                  </div>
+
+                  <div>
+                    <label class="small text-muted" style="font-size:0.7rem;">Atau tempelkan link URL gambar:</label>
+                    <input type="url" id="menuImgInput" class="form-control form-control-sm" value="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60" oninput="updateMenuImgPreview(this.value)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 px-0 pb-0 mt-3">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-warning fw-bold rounded-pill text-white px-4" id="btnSubmitMenuForm" style="background:#ea580c; border:none;">
+              <i class="bi bi-check2-circle me-1"></i> Simpan Menu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const user = JSON.parse(localStorage.getItem('cafe_user') || '{}');
+  if (user.role !== 'super_admin' && user.role !== 'admin') {
+    alert("⚠️ AKSES DITOLAK!\n\nKasir dan Dapur TIDAK MEMILIKI AKSES ke panel pengaturan sistem. Hanya Super Admin yang berhak!");
+    window.location.href = 'login.html';
+  }
+
+  document.getElementById('adminEmailDisplay').innerText = user.email || 'admin@gmail.com';
+
+  function logoutAdmin() {
+    localStorage.removeItem('cafe_user');
+    window.location.href = 'login.html';
+  }
+
+  let globalOrders = [];
+  let globalStaff = [];
+  let globalMenu = [];
+  let globalCategories = [];
+  let currentCategoryFilter = 'All';
+
+  async function loadAllData() {
+    try {
+      const resOrders = await fetch('/api/orders', {
+        headers: { 'x-user-email': user.email }
+      });
+      const dataOrders = await resOrders.json();
+      globalOrders = dataOrders.data || [];
+
+      const resStaff = await fetch('/api/admin/staff', {
+        headers: { 'x-user-email': user.email }
+      });
+      const dataStaff = await resStaff.json();
+      globalStaff = dataStaff.data || [];
+
+      const resMenu = await fetch('/api/menu');
+      const dataMenu = await resMenu.json();
+      globalMenu = dataMenu.data || [];
+      globalCategories = dataMenu.categories || [];
+
+      renderOverview();
+      renderStaff();
+      renderAllOrders();
+      renderCategoriesUI();
+      renderMenuAdmin();
+      loadSuccessBannerSettings();
+      loadReceiptSettings();
+      loadPaymentSettings();
+    } catch (e) {
+      console.error('Error fetching admin data:', e);
+    }
+  }
+
+  // ================= KELOLA KATEGORI MENU CAFE =================
+  function renderCategoriesUI() {
+    // 1. Render dropdown select kategori pada form tambah/edit menu
+    const select = document.getElementById('menuCategorySelect');
+    if (select) {
+      select.innerHTML = globalCategories.map(c => `
+        <option value="${c.name}">${c.icon || '🍽️'} ${c.name}</option>
+      `).join('');
+    }
+
+    // 2. Render filter bar kategori di atas daftar menu
+    const filterBar = document.getElementById('adminCategoryFilterBar');
+    if (filterBar) {
+      let filterHtml = `
+        <button class="btn btn-sm ${currentCategoryFilter === 'All' ? 'btn-dark' : 'btn-outline-secondary'} rounded-pill px-3" onclick="setAdminCategoryFilter('All')">
+          Semua Menu (${globalMenu.length})
+        </button>
+      `;
+      globalCategories.forEach(c => {
+        const count = globalMenu.filter(m => m.category === c.name).length;
+        const isActive = currentCategoryFilter === c.name;
+        filterHtml += `
+          <button class="btn btn-sm ${isActive ? 'btn-dark' : 'btn-outline-secondary'} rounded-pill px-3" onclick="setAdminCategoryFilter('${c.name}')">
+            ${c.icon || ''} ${c.name} (${count})
+          </button>
+        `;
+      });
+      filterBar.innerHTML = filterHtml;
+    }
+
+    // 3. Render daftar list di modal kelola kategori (tambah & edit & hapus)
+    const manageList = document.getElementById('categoryManageList');
+    if (manageList) {
+      if (globalCategories.length === 0) {
+        manageList.innerHTML = '<div class="text-muted small text-center py-2">Belum ada kategori.</div>';
+        return;
+      }
+      manageList.innerHTML = globalCategories.map(c => `
+        <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-5">${c.icon || '🍽️'}</span>
+            <span class="fw-bold small text-dark">${c.name}</span>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill" onclick="editCategoryPrompt('${c.id}', '${c.name}', '${c.icon || '🍽️'}')">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" onclick="deleteCategory('${c.id}', '${c.name}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function setAdminCategoryFilter(cat) {
+    currentCategoryFilter = cat;
+    renderCategoriesUI();
+    renderMenuAdmin();
+  }
+
+  async function submitNewCategory(e) {
+    e.preventDefault();
+    const name = document.getElementById('newCatNameInput').value.trim();
+    const icon = document.getElementById('newCatIconInput').value.trim() || '🍽️';
+
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify({ name, icon })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('newCatNameInput').value = '';
+        loadAllData();
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Gagal menambah kategori: ' + err.message);
+    }
+  }
+
+  async function editCategoryPrompt(id, oldName, oldIcon) {
+    const newName = prompt(`Ubah Nama Kategori "${oldName}":`, oldName);
+    if (!newName || !newName.trim() || newName.trim() === oldName) return;
+
+    const newIcon = prompt(`Ubah Ikon/Emoji Kategori:`, oldIcon) || oldIcon;
+
+    try {
+      const res = await fetch(`/api/categories/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify({ name: newName.trim(), icon: newIcon.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        loadAllData();
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Gagal mengedit kategori: ' + err.message);
+    }
+  }
+
+  async function deleteCategory(id, name) {
+    if (confirm(`Yakin ingin menghapus kategori "${name}"? Menu yang berkategori ini tidak akan terhapus namun kategorinya perlu disesuaikan.`)) {
+      try {
+        const res = await fetch(`/api/categories/${id}`, {
+          method: 'DELETE',
+          headers: { 'x-user-email': user.email }
+        });
+        const data = await res.json();
+        loadAllData();
+        alert(data.message);
+      } catch (err) {
+        alert('Gagal menghapus kategori: ' + err.message);
+      }
+    }
+  }
+
+  // ================= UPLOAD GAMBAR LOKAL & PENCARIAN WEB UNTUK BANNER & MENU =================
+  let currentWebSearchTarget = 'banner'; // 'banner' atau 'menu'
+
+  function handleImageFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Pilih file gambar (JPG, PNG, WebP)!');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64Data = evt.target.result;
+      document.getElementById('setBannerImgUrl').value = base64Data;
+      updateBannerLivePreview();
+      alert('✅ Foto banner berhasil diunggah dari perangkat! Klik "Simpan Banner & Gambar" untuk menerapkan.');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleMenuImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Pilih file gambar yang valid (JPG, PNG, WebP)!');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64Data = evt.target.result;
+      document.getElementById('menuImgInput').value = base64Data;
+      updateMenuImgPreview(base64Data);
+      alert('✅ Foto menu berhasil diunggah dari perangkat Anda!');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updateMenuImgPreview(url) {
+    const previewEl = document.getElementById('menuImgPreview');
+    if (previewEl) {
+      previewEl.src = url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60';
+    }
+  }
+
+  async function openWebSearchModal() {
+    openWebSearchFor('banner');
+  }
+
+  async function openWebSearchFor(target = 'banner') {
+    currentWebSearchTarget = target;
+    const titleEl = document.getElementById('webSearchModalTitle');
+    const subtitleEl = document.getElementById('webSearchModalSubtitle');
+    const inputEl = document.getElementById('webSearchKeywordInput');
+
+    if (target === 'menu') {
+      titleEl.innerHTML = '<i class="bi bi-cup-straw text-primary me-2"></i> Cari Gambar Menu Makanan / Minuman';
+      subtitleEl.innerText = 'Pilih foto hidangan mie gacoan, minuman, dimsum, atau camilan berkualitas tinggi';
+      const menuName = document.getElementById('menuNameInput').value.trim();
+      const menuCat = document.getElementById('menuCategorySelect').value.toLowerCase();
+      inputEl.value = menuName || (menuCat === 'coffee' ? 'kopi' : (menuCat === 'non-coffee' ? 'matcha' : (menuCat === 'snack' ? 'dimsum' : 'mie')));
+    } else {
+      titleEl.innerHTML = '<i class="bi bi-image text-primary me-2"></i> Pencarian Gambar Web Cafe & Resto';
+      subtitleEl.innerText = 'Pilih gambar resolusi tinggi untuk banner ucapan terima kasih setelah bayar';
+      inputEl.value = 'cafe';
+    }
+
+    new bootstrap.Modal(document.getElementById('modalWebSearch')).show();
+    executeWebSearch();
+  }
+
+  function quickTagSearch(tag) {
+    document.getElementById('webSearchKeywordInput').value = tag;
+    executeWebSearch();
+  }
+
+  async function executeWebSearch() {
+    const q = document.getElementById('webSearchKeywordInput').value.trim();
+    const grid = document.getElementById('webSearchResultsGrid');
+    grid.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="small text-muted mt-2">Mencari gambar berkualitas tinggi...</p></div>';
+
+    try {
+      const res = await fetch(`/api/admin/search-web-images?q=${encodeURIComponent(q)}`, {
+        headers: { 'x-user-email': user.email }
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        if (data.data.length === 0) {
+          grid.innerHTML = '<div class="col-12 text-center text-muted py-4">Tidak ada gambar yang cocok. Coba kata kunci lain (kopi, mie, dimsum, cafe).</div>';
+          return;
+        }
+        grid.innerHTML = data.data.map(img => `
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="card h-100 border p-1 shadow-sm" style="cursor:pointer; border-radius:12px; transition:transform 0.15s;" onclick="selectWebImage('${img.url}')" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+              <img src="${img.url}" class="gallery-thumb w-100" style="height:100px; object-fit:cover; border-radius:8px;" alt="${img.title}">
+              <div class="p-1 text-center" style="font-size:0.75rem; font-weight:600; line-height:1.2; color:#1e293b;">
+                ${img.title}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    } catch (err) {
+      grid.innerHTML = '<div class="col-12 text-danger text-center">Gagal memuat gambar web</div>';
+    }
+  }
+
+  function selectWebImage(url) {
+    if (currentWebSearchTarget === 'menu') {
+      document.getElementById('menuImgInput').value = url;
+      updateMenuImgPreview(url);
+      bootstrap.Modal.getInstance(document.getElementById('modalWebSearch')).hide();
+      alert('✅ Foto menu dari web berhasil dipilih!');
+    } else {
+      document.getElementById('setBannerImgUrl').value = url;
+      updateBannerLivePreview();
+      bootstrap.Modal.getInstance(document.getElementById('modalWebSearch')).hide();
+      alert('✅ Gambar web berhasil dipilih untuk Banner! Klik "Simpan Banner & Gambar" untuk menerapkan.');
+    }
+  }
+
+  // ================= BANNER & GAMBAR TERIMA KASIH (SUPER ADMIN ONLY) =================
+  async function loadSuccessBannerSettings() {
+    try {
+      const res = await fetch('/api/success-banner-settings');
+      const data = await res.json();
+      if (data.success && data.data) {
+        const b = data.data;
+        document.getElementById('setBannerTitle').value = b.title;
+        document.getElementById('setBannerMsg').value = b.message;
+        document.getElementById('setBannerSubMsg').value = b.subMessage;
+        document.getElementById('setBannerImgUrl').value = b.imageUrl;
+        document.getElementById('setBannerSocial').value = b.socialText || '';
+        document.getElementById('setBannerShowImg').checked = b.showImage;
+
+        updateBannerLivePreview();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function updateBannerLivePreview() {
+    const title = document.getElementById('setBannerTitle').value || 'Pembayaran Berhasil! Terima Kasih';
+    const msg = document.getElementById('setBannerMsg').value || 'Pesanan Anda telah diterima dan langsung masuk ke antrean dapur.';
+    const sub = document.getElementById('setBannerSubMsg').value || 'Silakan duduk santai di meja Anda, pesanan lezat akan segera diantar!';
+    const imgUrl = document.getElementById('setBannerImgUrl').value;
+    const social = document.getElementById('setBannerSocial').value;
+    const showImg = document.getElementById('setBannerShowImg').checked;
+
+    document.getElementById('prevBannerTitle').innerText = title;
+    document.getElementById('prevBannerMsg').innerText = msg;
+    document.getElementById('prevBannerSubMsg').innerText = sub;
+    document.getElementById('prevBannerSocial').innerText = social;
+
+    const imgWrap = document.getElementById('prevBannerImgWrapper');
+    const defaultBannerFallback = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80';
+    if (showImg && (imgUrl || defaultBannerFallback)) {
+      document.getElementById('prevBannerImg').src = imgUrl || defaultBannerFallback;
+      imgWrap.style.display = 'block';
+    } else {
+      imgWrap.style.display = 'none';
+    }
+  }
+
+  async function saveSuccessBannerSettings() {
+    const payload = {
+      title: document.getElementById('setBannerTitle').value.trim(),
+      message: document.getElementById('setBannerMsg').value.trim(),
+      subMessage: document.getElementById('setBannerSubMsg').value.trim(),
+      imageUrl: document.getElementById('setBannerImgUrl').value.trim(),
+      socialText: document.getElementById('setBannerSocial').value.trim(),
+      showImage: document.getElementById('setBannerShowImg').checked
+    };
+
+    try {
+      const res = await fetch('/api/success-banner-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Banner & Gambar Terima Kasih Berhasil Disimpan oleh Super Admin! Tampilan ini langsung aktif di layar HP pelanggan.');
+      } else {
+        alert(data.message);
+      }
+    } catch (e) {
+      alert('Gagal menyimpan: ' + e.message);
+    }
+  }
+
+  // ================= RECEIPT SETTINGS =================
+  async function loadReceiptSettings() {
+    try {
+      const res = await fetch('/api/receipt-settings');
+      const data = await res.json();
+      if (data.success && data.data) {
+        const r = data.data;
+        document.getElementById('rcpPaperWidth').value = r.paperWidth;
+        document.getElementById('rcpFontSize').value = r.fontSize;
+        document.getElementById('rcpCafeName').value = r.cafeName;
+        document.getElementById('rcpHeaderNote').value = r.headerNote;
+        document.getElementById('rcpAddress').value = r.cafeAddress;
+        document.getElementById('rcpPhone').value = r.cafePhone;
+        document.getElementById('rcpFooterNote').value = r.footerNote;
+        document.getElementById('rcpWifiInfo').value = r.wifiPassword;
+        document.getElementById('rcpAutoPrint').checked = r.autoPrintOnConnect;
+
+        updateReceiptLivePreview();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function updateReceiptLivePreview() {
+    const width = document.getElementById('rcpPaperWidth').value;
+    const fontSize = document.getElementById('rcpFontSize').value;
+    const cafeName = document.getElementById('rcpCafeName').value || 'KOPI & MIE CAFE';
+    const headerNote = document.getElementById('rcpHeaderNote').value || 'RESTO & CAFE SPECIALIST';
+    const address = document.getElementById('rcpAddress').value || 'Jl. Raya Kuliner Nusantara No. 88';
+    const phone = document.getElementById('rcpPhone').value || '0812-3456-7890';
+    const footer = document.getElementById('rcpFooterNote').value || 'Terima kasih atas kunjungan Anda!';
+    const wifi = document.getElementById('rcpWifiInfo').value || 'Password Wifi: cafe-enak-88';
+
+    document.getElementById('previewPaperBadge').innerText = width;
+
+    const paper = document.getElementById('paperReceiptSim');
+    paper.style.width = width === '58mm' ? '280px' : '360px';
+    paper.style.fontSize = fontSize;
+    paper.style.fontFamily = 'Courier New, monospace';
+
+    paper.innerHTML = `
+      <div style="text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 1.25em; font-weight: bold;">${cafeName}</div>
+        <div style="font-size: 0.85em; color: #555;">${headerNote}</div>
+        <div style="font-size: 0.85em;">${address}</div>
+        <div style="font-size: 0.85em;">Telp / WA: ${phone}</div>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.9em;">
+        <span>No: #ORD-982144</span>
+        <span>Meja: <strong>5</strong></span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.9em;">
+        <span>Pelanggan: Budi Santoso</span>
+        <span>QRIS Lunas</span>
+      </div>
+      <div style="font-size:0.8em; color:#666;">${new Date().toLocaleString('id-ID')}</div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      
+      <div style="margin: 6px 0;">
+        <div style="display:flex; justify-content:space-between;">
+          <span><strong>1x</strong> Mie Pedas Manis</span>
+          <span>Rp 16.000</span>
+        </div>
+        <div style="font-size:0.8em; color:#555; margin-left: 10px;">- Level 4 (Extra Pedas)</div>
+        <div style="display:flex; justify-content:space-between; margin-top:3px;">
+          <span><strong>1x</strong> Kopi Kenangan Latte</span>
+          <span>Rp 22.000</span>
+        </div>
+      </div>
+
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.9em;">
+        <span>Subtotal:</span>
+        <span>Rp 38.000</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.9em;">
+        <span>Pajak & Servis (10%):</span>
+        <span>Rp 3.800</span>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display:flex; justify-content:space-between; font-size:1.15em; font-weight:bold;">
+        <span>TOTAL:</span>
+        <span>Rp 41.800</span>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+      <div style="text-align: center; margin-top: 8px;">
+        <div style="font-size:0.9em; font-weight:bold;">STATUS: LUNAS</div>
+        <div style="white-space: pre-line; margin: 4px 0; font-size:0.85em;">${footer}</div>
+        <div style="font-size:0.8em; font-style:italic;">${wifi}</div>
+      </div>
+    `;
+  }
+
+  async function saveReceiptSettings() {
+    const payload = {
+      paperWidth: document.getElementById('rcpPaperWidth').value,
+      fontSize: document.getElementById('rcpFontSize').value,
+      cafeName: document.getElementById('rcpCafeName').value.trim(),
+      headerNote: document.getElementById('rcpHeaderNote').value.trim(),
+      cafeAddress: document.getElementById('rcpAddress').value.trim(),
+      cafePhone: document.getElementById('rcpPhone').value.trim(),
+      footerNote: document.getElementById('rcpFooterNote').value.trim(),
+      wifiPassword: document.getElementById('rcpWifiInfo').value.trim(),
+      autoPrintOnConnect: document.getElementById('rcpAutoPrint').checked
+    };
+
+    try {
+      const res = await fetch('/api/receipt-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Pengaturan Format Struk Kertas Berhasil Disimpan oleh Super Admin!');
+      } else {
+        alert(data.message);
+      }
+    } catch (e) {
+      alert('Gagal menyimpan: ' + e.message);
+    }
+  }
+
+  function updateQrisLivePreview(url) {
+    const imgEl = document.getElementById('qrisLivePreviewImg');
+    if (imgEl) {
+      imgEl.src = url || 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=QRIS_DEMO_CAFE';
+    }
+  }
+
+  function resetDefaultQris() {
+    const defaultUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=00020101021226600016ID.CO.QRIS.WWW01189360099900000000010215ID10203040506075204581253033605802ID5925KOPI%20MIE%20CAFE%20INDONESIA6007JAKARTA6304ABCD';
+    document.getElementById('setQrisUrl').value = defaultUrl;
+    updateQrisLivePreview(defaultUrl);
+  }
+
+  // ================= PAYMENT SETTINGS & GATEWAY WEBHOOK =================
+  function updateGatewayHints() {
+    const provider = document.getElementById('setGatewayProvider').value;
+    const hint = document.getElementById('gatewayProviderHint');
+    if (provider === 'midtrans') {
+      hint.innerText = "Midtrans: Menggunakan ServerKey untuk memverifikasi SHA512 signature otomatis dari notifikasi webhook.";
+    } else if (provider === 'xendit') {
+      hint.innerText = "Xendit: Menggunakan x-callback-token untuk verifikasi keaslian webhook transaksi QRIS.";
+    } else if (provider === 'tripay') {
+      hint.innerText = "Tripay: Menggunakan HMAC-SHA256 signature berbasis Private Key merchant.";
+    } else if (provider === 'doku') {
+      hint.innerText = "DOKU: Menggunakan Client-ID & Secret Header untuk mencocokkan notifikasi QRIS.";
+    } else {
+      hint.innerText = "Manual: Tidak menggunakan payment gateway otomatis (kasir / admin konfirmasi manual).";
+    }
+  }
+
+  function copyWebhookUrl() {
+    const input = document.getElementById('webhookUrlDisplay');
+    input.select();
+    navigator.clipboard.writeText(input.value).then(() => {
+      alert("✅ URL Webhook berhasil disalin: " + input.value);
+    });
+  }
+
+  async function loadPaymentSettings() {
+    try {
+      const res = await fetch('/api/payment-settings');
+      const data = await res.json();
+      if (data.success && data.data) {
+        const p = data.data;
+        document.getElementById('setGatewayProvider').value = p.gatewayProvider || 'midtrans';
+        document.getElementById('setGatewayServerKey').value = p.serverKey || '';
+        document.getElementById('setGatewayClientKey').value = p.clientKey || '';
+        document.getElementById('setGatewayWebhookSecret').value = p.webhookSecret || '';
+        document.getElementById('setGatewayProd').checked = !!p.isProduction;
+
+        document.getElementById('setQrisEnabled').checked = p.qrisEnabled;
+        document.getElementById('setQrisMerchant').value = p.qrisMerchantName;
+        document.getElementById('setQrisNmid').value = p.qrisNmid;
+        document.getElementById('setQrisUrl').value = p.qrisCustomImageUrl;
+        document.getElementById('setQrisNotes').value = p.qrisNotes;
+        updateQrisLivePreview(p.qrisCustomImageUrl);
+
+        document.getElementById('setBankEnabled').checked = p.bankEnabled;
+        document.getElementById('setBankName').value = p.bankName;
+        document.getElementById('setBankAccount').value = p.bankAccountNumber;
+        document.getElementById('setBankHolder').value = p.bankAccountHolder;
+
+        updateGatewayHints();
+        loadWebhookLogs();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function savePaymentSettings() {
+    const payload = {
+      gatewayProvider: document.getElementById('setGatewayProvider').value,
+      serverKey: document.getElementById('setGatewayServerKey').value.trim(),
+      clientKey: document.getElementById('setGatewayClientKey').value.trim(),
+      webhookSecret: document.getElementById('setGatewayWebhookSecret').value.trim(),
+      isProduction: document.getElementById('setGatewayProd').checked,
+
+      qrisEnabled: document.getElementById('setQrisEnabled').checked,
+      qrisMerchantName: document.getElementById('setQrisMerchant').value.trim(),
+      qrisNmid: document.getElementById('setQrisNmid').value.trim(),
+      qrisCustomImageUrl: document.getElementById('setQrisUrl').value.trim(),
+      qrisNotes: document.getElementById('setQrisNotes').value.trim(),
+
+      bankEnabled: document.getElementById('setBankEnabled').checked,
+      bankName: document.getElementById('setBankName').value.trim(),
+      bankAccountNumber: document.getElementById('setBankAccount').value.trim(),
+      bankAccountHolder: document.getElementById('setBankHolder').value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/payment-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Konfigurasi Payment Gateway & QRIS Berhasil Disimpan oleh Super Admin!');
+        loadPaymentSettings();
+      } else {
+        alert(data.message);
+      }
+    } catch (e) {
+      alert('Gagal menyimpan: ' + e.message);
+    }
+  }
+
+  async function loadWebhookLogs() {
+    try {
+      const res = await fetch('/api/admin/webhook-logs', {
+        headers: { 'x-user-email': user.email }
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('webhookAuditTableBody');
+      if (data.success && data.logs && data.logs.length > 0) {
+        tbody.innerHTML = data.logs.map(log => {
+          const isSuccess = log.result.includes('BERHASIL');
+          const badgeClass = isSuccess ? 'bg-success' : (log.result.includes('PENDING') ? 'bg-warning text-dark' : 'bg-danger');
+          return `
+            <tr>
+              <td>${log.timestamp}</td>
+              <td><span class="badge bg-dark">${(log.provider || 'GATEWAY').toUpperCase()}</span></td>
+              <td class="fw-bold">#${log.orderId || '-'}</td>
+              <td>Rp ${(log.grossAmount || 0).toLocaleString('id-ID')}</td>
+              <td><span class="badge ${badgeClass}">${log.transactionStatus || '-'}</span></td>
+              <td class="${isSuccess ? 'text-success fw-bold' : 'text-danger'}">${log.result}</td>
+              <td class="text-muted small">${log.ip || '-'}</td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Belum ada riwayat webhook tercatat.</td></tr>';
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // ================= SIMULASI PENGUJIAN WEBHOOK GATEWAY =================
+  function openSimulatePaymentModal() {
+    const select = document.getElementById('simTargetOrderSelect');
+    const waitingOrders = globalOrders.filter(o => o.status.includes('Menunggu') || o.paymentStatus !== 'PAID');
+    
+    if (waitingOrders.length === 0) {
+      select.innerHTML = '<option value="">(Tidak ada pesanan menunggu pembayaran, buat pesanan baru dahulu)</option>';
+    } else {
+      select.innerHTML = '<option value="">-- Pilih Pesanan Menunggu --</option>' + waitingOrders.map(o => `
+        <option value="${o.id}" data-amount="${o.totalAmount}">#${o.id} - Meja ${o.tableNumber} (${o.customerName}) - Rp ${o.totalAmount.toLocaleString('id-ID')}</option>
+      `).join('');
+    }
+
+    new bootstrap.Modal(document.getElementById('modalSimulatePayment')).show();
+  }
+
+  function autoFillSimAmount() {
+    const select = document.getElementById('simTargetOrderSelect');
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.dataset.amount) {
+      document.getElementById('simAmountInput').value = opt.dataset.amount;
+    }
+  }
+
+  async function executePaymentSimulation(e) {
+    e.preventDefault();
+    const orderId = document.getElementById('simTargetOrderSelect').value;
+    const amount = parseInt(document.getElementById('simAmountInput').value);
+    const status = document.getElementById('simStatusSelect').value;
+    const provider = document.getElementById('simGatewaySelect').value;
+
+    if (!orderId) {
+      alert("Pilih Order ID terlebih dahulu!");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/simulate-gateway-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify({ orderId, amount, status, provider })
+      });
+      const data = await res.json();
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('modalSimulatePayment')).hide();
+        alert('🎉 SIMULASI WEBHOOK SUKSES!\n\n' + data.message);
+        loadAllData();
+        loadWebhookLogs();
+      } else {
+        alert('⚠️ SIMULASI DITOLAK SESUAI RULE SERVER:\n\n' + data.message);
+        loadWebhookLogs();
+      }
+    } catch (err) {
+      alert("Gagal mengirim simulasi: " + err.message);
+    }
+  }
+
+  function renderOverview() {
+    const paidOrders = globalOrders.filter(o => o.status !== 'Menunggu Pembayaran Kasir' && o.status !== 'Menunggu Transfer Bank');
+    const totalOmset = paidOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const activeOrders = globalOrders.filter(o => o.status === 'Sedang Dimasak' || o.status.includes('Menunggu Antrean') || o.status.includes('Diterima')).length;
+    const completedOrders = globalOrders.filter(o => o.status === 'Selesai').length;
+
+    document.getElementById('statOmset').innerText = 'Rp ' + totalOmset.toLocaleString('id-ID');
+    document.getElementById('statOrderDone').innerText = `${completedOrders} Pesanan selesai`;
+    document.getElementById('statActiveOrders').innerText = activeOrders;
+    document.getElementById('statTotalStaff').innerText = globalStaff.length;
+    document.getElementById('statTotalMenu').innerText = globalMenu.length;
+
+    const tbody = document.getElementById('overviewOrderList');
+    if (globalOrders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">Belum ada pesanan masuk.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = globalOrders.slice(0, 5).map(o => `
+      <tr>
+        <td class="fw-bold">#${o.id}</td>
+        <td><span class="badge bg-dark">Meja ${o.tableNumber}</span></td>
+        <td>${o.customerName}</td>
+        <td class="fw-bold text-danger">Rp ${o.totalAmount.toLocaleString('id-ID')}</td>
+        <td><span class="badge bg-light text-dark border">${o.paymentMethod}</span></td>
+        <td><span class="badge ${getStatusBadge(o.status)}">${o.status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-outline-info rounded-pill" onclick="viewAdminReceipt('${o.id}')">
+            <i class="bi bi-receipt"></i> Cek Struk
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function getStatusBadge(status) {
+    if (status.includes('Selesai')) return 'bg-success';
+    if (status.includes('Dimasak')) return 'bg-primary';
+    if (status.includes('Siap')) return 'bg-info text-dark';
+    if (status.includes('Kasir') || status.includes('Transfer Bank')) return 'bg-danger';
+    return 'bg-warning text-dark';
+  }
+
+  function renderStaff() {
+    const tbody = document.getElementById('staffTableBody');
+    tbody.innerHTML = globalStaff.map(s => {
+      let roleBadge = 'role-badge-kasir';
+      let pageAccessText = 'Hanya POS Kasir (/cashier.html)';
+      if (s.role === 'dapur') {
+        roleBadge = 'role-badge-dapur';
+        pageAccessText = 'Hanya Antrean Dapur (/kitchen.html)';
+      } else if (s.role === 'super_admin' || s.role === 'admin') {
+        roleBadge = 'bg-danger text-white';
+        pageAccessText = 'Semua Akses & Pengaturan (/admin.html)';
+      }
+
+      return `
+        <tr>
+          <td class="fw-bold">${s.name}</td>
+          <td>
+            <i class="bi bi-google text-danger me-1"></i> ${s.email}
+          </td>
+          <td>
+            <span class="badge ${roleBadge} px-3 py-2 text-uppercase">
+              ${s.role === 'super_admin' ? '👑 SUPER ADMIN' : s.role + ' (Staff)'}
+            </span>
+          </td>
+          <td class="small text-muted">
+            ${pageAccessText}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteStaff('${s.id}')">
+              <i class="bi bi-trash"></i> Cabut Akses
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // RENDER SEMUA TRANSAKSI DENGAN FITUR CEK ISI STRUK
+  function renderAllOrders() {
+    const tbody = document.getElementById('allOrdersTableBody');
+    const filter = document.getElementById('adminOrderFilterSelect').value;
+
+    let filtered = globalOrders;
+    if (filter === 'Selesai') {
+      filtered = globalOrders.filter(o => o.status === 'Selesai');
+    } else if (filter === 'aktif') {
+      filtered = globalOrders.filter(o => o.status !== 'Selesai');
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data transaksi pada filter ini.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(o => {
+      const itemsText = o.items.map(i => `${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}`).join(', ');
+      return `
+        <tr>
+          <td class="fw-bold">#${o.id}</td>
+          <td><span class="badge bg-dark fs-6">Meja ${o.tableNumber}</span></td>
+          <td>${o.customerName}</td>
+          <td class="small text-truncate" style="max-width:200px;" title="${itemsText}">${itemsText}</td>
+          <td class="fw-bold text-danger">Rp ${o.totalAmount.toLocaleString('id-ID')}</td>
+          <td><span class="badge bg-secondary">${o.paymentMethod}</span></td>
+          <td><span class="badge ${getStatusBadge(o.status)}">${o.status}</span></td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary rounded-pill fw-semibold" onclick="viewAdminReceipt('${o.id}')">
+              <i class="bi bi-receipt me-1"></i> Buka Isi Struk
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // BUKA MODAL STRUK DETAIL DI SUPER ADMIN
+  function viewAdminReceipt(orderId) {
+    const order = globalOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const subtotal = order.items.reduce((sum, i) => sum + (i.price * i.qty), 0);
+    const tax = Math.round(subtotal * 0.10);
+    const grandTotal = order.totalAmount;
+    const orderDate = new Date(order.createdAt).toLocaleString('id-ID');
+    const completedDate = order.completedAt ? new Date(order.completedAt).toLocaleString('id-ID') : '-';
+
+    const itemsHtml = order.items.map(it => `
+      <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+        <span><strong>${it.qty}x</strong> ${it.name}</span>
+        <span>Rp ${(it.price * it.qty).toLocaleString('id-ID')}</span>
+      </div>
+      ${it.variant ? `<div style="font-size:10px; color:#555; margin-left:14px;">- ${it.variant}</div>` : ''}
+      ${it.notes ? `<div style="font-size:10px; color:#555; margin-left:14px;">- Catatan: ${it.notes}</div>` : ''}
+    `).join('');
+
+    document.getElementById('adminReceiptModalContent').innerHTML = `
+      <div style="text-align: center; margin-bottom: 8px;">
+        <div style="font-size: 15px; font-weight: bold;">KOPI & MIE CAFE</div>
+        <div style="font-size: 11px;">Resto & Eatery Indonesia</div>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>No Order: #${order.id}</span>
+        <span>Meja: <strong>${order.tableNumber}</strong></span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Pelanggan: ${order.customerName}</span>
+        <span>Metode: ${order.paymentMethod}</span>
+      </div>
+      <div style="font-size: 10px; color: #555;">Dipesan: ${orderDate}</div>
+      <div style="font-size: 10px; color: #555;">Diselesaikan: ${completedDate}</div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+      <div style="margin: 6px 0;">
+        ${itemsHtml}
+      </div>
+
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Subtotal:</span>
+        <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Pajak (10%):</span>
+        <span>Rp ${tax.toLocaleString('id-ID')}</span>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold;">
+        <span>TOTAL TRANSAKSI:</span>
+        <span>Rp ${grandTotal.toLocaleString('id-ID')}</span>
+      </div>
+      <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+      <div style="text-align: center; margin-top: 6px; font-weight: bold; color: green;">
+        STATUS: ${order.status.toUpperCase()}
+      </div>
+    `;
+
+    new bootstrap.Modal(document.getElementById('modalAdminReceiptDetail')).show();
+  }
+
+  function renderMenuAdmin() {
+    const container = document.getElementById('adminMenuList');
+    let filtered = globalMenu;
+
+    // Filter Kategori
+    if (currentCategoryFilter !== 'All') {
+      filtered = filtered.filter(m => m.category === currentCategoryFilter);
+    }
+
+    // Filter Menu Favorit
+    const onlyPopular = document.getElementById('filterOnlyPopular').checked;
+    if (onlyPopular) {
+      filtered = filtered.filter(m => m.popular);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="col-12 text-center py-5">
+          <i class="bi bi-egg-fried fs-1 text-secondary"></i>
+          <h5 class="text-secondary mt-2">Tidak ada menu pada filter ini</h5>
+          <p class="text-muted small">Coba pilih kategori lain atau nonaktifkan filter favorit.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(m => `
+      <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+        <div class="menu-admin-card h-100 d-flex flex-column justify-content-between shadow-sm">
+          <div>
+            <div class="position-relative">
+              <img src="${m.image}" class="menu-admin-img" alt="${m.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'">
+              <span class="badge bg-dark bg-opacity-75 position-absolute top-0 start-0 m-2 rounded-pill px-2 py-1 small">
+                ${m.category}
+              </span>
+              <span class="badge bg-white text-dark shadow-sm position-absolute top-0 end-0 m-2 rounded-pill px-2 py-1 small fw-bold">
+                <i class="bi bi-clock-history text-danger"></i> ~${m.prepTime || 10} mnt
+              </span>
+            </div>
+            <div class="p-3">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h6 class="fw-bold mb-0 text-dark text-truncate" title="${m.name}">${m.name}</h6>
+                ${m.popular ? '<span class="badge bg-warning text-dark small"><i class="bi bi-star-fill text-danger"></i> Favorit</span>' : ''}
+              </div>
+              <div class="fs-6 fw-bold text-danger mb-1">Rp ${m.price.toLocaleString('id-ID')}</div>
+              <p class="small text-muted mb-2 line-clamp-2" style="font-size:0.75rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                ${m.desc || 'Menu spesial racikan barista dan koki cafe.'}
+              </p>
+              ${m.hasLevel ? '<span class="badge bg-danger-subtle text-danger small"><i class="bi bi-fire"></i> Ada Level Pedas</span>' : '<span class="badge bg-light text-muted small border">Level Standar</span>'}
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm flex-grow-1 rounded-pill fw-semibold" onclick="openEditMenuModal(${m.id})">
+                <i class="bi bi-pencil-square me-1"></i> Edit
+              </button>
+              <button class="btn btn-outline-danger btn-sm rounded-pill fw-semibold px-3" onclick="deleteMenu(${m.id})">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openAddMenuModal() {
+    document.getElementById('editMenuId').value = '';
+    document.getElementById('formAddMenu').reset();
+    document.getElementById('menuModalTitle').innerHTML = '<i class="bi bi-plus-circle-fill text-warning me-2" style="color:#ea580c !important;"></i> Tambah Menu Baru Cafe';
+    document.getElementById('btnSubmitMenuForm').innerHTML = '<i class="bi bi-check2-circle me-1"></i> Simpan & Publikasikan Menu';
+    document.getElementById('menuImgInput').value = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60';
+    updateMenuImgPreview('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60');
+    renderCategoriesUI();
+    new bootstrap.Modal(document.getElementById('modalAddMenu')).show();
+  }
+
+  function openEditMenuModal(menuId) {
+    const item = globalMenu.find(m => m.id === menuId);
+    if (!item) return;
+
+    renderCategoriesUI();
+    document.getElementById('editMenuId').value = item.id;
+    document.getElementById('menuNameInput').value = item.name;
+    document.getElementById('menuCategorySelect').value = item.category;
+    document.getElementById('menuPriceInput').value = item.price;
+    document.getElementById('menuPrepInput').value = item.prepTime || 10;
+    document.getElementById('menuDescInput').value = item.desc || '';
+    document.getElementById('menuHasLevel').checked = !!item.hasLevel;
+    document.getElementById('menuIsPopular').checked = !!item.popular;
+    document.getElementById('menuImgInput').value = item.image;
+    updateMenuImgPreview(item.image);
+
+    document.getElementById('menuModalTitle').innerHTML = '<i class="bi bi-pencil-square text-primary me-2"></i> Edit Menu Cafe: ' + item.name;
+    document.getElementById('btnSubmitMenuForm').innerHTML = '<i class="bi bi-floppy-fill me-1"></i> Simpan Perubahan Menu';
+    
+    new bootstrap.Modal(document.getElementById('modalAddMenu')).show();
+  }
+
+  async function submitSaveMenu(e) {
+    e.preventDefault();
+    const editId = document.getElementById('editMenuId').value;
+    const name = document.getElementById('menuNameInput').value;
+    const category = document.getElementById('menuCategorySelect').value;
+    const price = document.getElementById('menuPriceInput').value;
+    const prepTime = document.getElementById('menuPrepInput').value;
+    const desc = document.getElementById('menuDescInput').value;
+    const image = document.getElementById('menuImgInput').value;
+    const hasLevel = document.getElementById('menuHasLevel').checked;
+    const popular = document.getElementById('menuIsPopular').checked;
+
+    const payload = { name, category, price, prepTime, desc, image, hasLevel, popular };
+
+    const isEdit = !!editId;
+    const url = isEdit ? `/api/menu/${editId}` : '/api/menu';
+    const method = isEdit ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': user.email
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('modalAddMenu')).hide();
+        document.getElementById('formAddMenu').reset();
+        loadAllData();
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Gagal menyimpan menu: ' + err.message);
+    }
+  }
+
+  async function submitNewStaff(e) {
+    e.preventDefault();
+    const name = document.getElementById('staffNameInput').value;
+    const email = document.getElementById('staffEmailInput').value;
+    const role = document.getElementById('staffRoleSelect').value;
+
+    const res = await fetch('/api/admin/staff', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-email': user.email
+      },
+      body: JSON.stringify({ name, email, role })
+    });
+    const data = await res.json();
+    if (data.success) {
+      bootstrap.Modal.getInstance(document.getElementById('modalAddStaff')).hide();
+      document.getElementById('formAddStaff').reset();
+      loadAllData();
+      alert(data.message);
+    } else {
+      alert(data.message);
+    }
+  }
+
+  async function deleteStaff(id) {
+    if (confirm('Yakin ingin mencabut akses staf ini?')) {
+      await fetch(`/api/admin/staff/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-user-email': user.email }
+      });
+      loadAllData();
+    }
+  }
+
+  async function deleteMenu(id) {
+    if (confirm('Hapus menu ini?')) {
+      await fetch(`/api/menu/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-user-email': user.email }
+      });
+      loadAllData();
+    }
+  }
+
+  loadAllData();
+  setInterval(loadAllData, 4000);
+</script>
+</body>
+</html>

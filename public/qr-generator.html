@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Standee Barcode QR Meja Cafe (Khusus Admin)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    body {
+      background-color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .standee-card {
+      background: white;
+      border: 3px solid #0f172a;
+      border-radius: 1.5rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      width: 290px;
+      margin: 15px auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+      page-break-inside: avoid;
+    }
+    .standee-header {
+      background: #ea580c;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .table-number-box {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .qr-frame {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 1rem;
+      border: 2px dashed #cbd5e1;
+      display: inline-block;
+      margin: 12px 0;
+    }
+    .qr-frame img {
+      width: 190px;
+      height: 190px;
+      display: block;
+    }
+    .token-badge {
+      font-family: monospace;
+      font-size: 0.7rem;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+      }
+      .standee-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
+      .standee-card {
+        box-shadow: none;
+        border: 2px solid #000;
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar Navigasi Khusus Admin -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark no-print">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="admin.html">
+        <i class="bi bi-shield-lock-fill text-warning me-2"></i> Standee QR Meja (Khusus Super Admin)
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="admin.html" class="btn btn-outline-light btn-sm rounded-pill">
+          <i class="bi bi-arrow-left"></i> Kembali ke Admin
+        </a>
+        <button class="btn btn-warning btn-sm rounded-pill fw-bold" onclick="window.print()">
+          <i class="bi bi-printer-fill me-1"></i> Cetak / Print Stiker
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4 no-print">
+    <!-- PEMBERITAHUAN KEAMANAN & FITUR REFRESH BARCODE MEJA -->
+    <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <div class="badge bg-danger mb-2"><i class="bi bi-lock-fill"></i> HAK AKSES KHUSUS SUPER ADMIN</div>
+          <h4 class="fw-bold mb-1">Cetak & Regenerate Barcode QR Meja Cafe</h4>
+          <p class="text-muted small mb-0">
+            Setiap meja dilindungi oleh <strong>Security Token</strong> unik. Jika barcode meja rusak atau dicurigai disalahgunakan, Admin dapat melakukan <strong>Refresh Barcode</strong>. Barcode lama akan otomatis mati dan digantikan dengan kode QR baru!
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <!-- Tombol Refresh Barcode dengan Konfirmasi & Notifikasi -->
+          <button class="btn btn-outline-danger fw-bold rounded-pill" onclick="promptRefreshBarcode()">
+            <i class="bi bi-arrow-repeat me-1"></i> Refresh Token Barcode Meja
+          </button>
+          <button class="btn btn-dark fw-bold rounded-pill" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i> Cetak Semua Stiker
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Notifikasi Realtime Setelah Refresh -->
+    <div id="refreshAlertBox" class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" style="display:none;" role="alert">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+        <div>
+          <strong id="refreshAlertTitle">Pemberitahuan Refresh Barcode Berhasil!</strong>
+          <div class="small" id="refreshAlertDesc">Barcode meja lama telah kedaluwarsa dan dinonaktifkan. Silakan cetak stiker barcode baru ini.</div>
+        </div>
+      </div>
+      <button type="button" class="btn-close" onclick="document.getElementById('refreshAlertBox').style.display='none'"></button>
+    </div>
+
+    <!-- Filter Meja -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="small fw-bold text-secondary">Tampilkan Meja:</span>
+      <select id="tableFilter" class="form-select form-select-sm w-auto" onchange="renderStandees()">
+        <option value="all">Semua Meja (1 - 20)</option>
+        <option value="1">Meja 1 Saja</option>
+        <option value="2">Meja 2 Saja</option>
+        <option value="3">Meja 3 Saja</option>
+        <option value="5">Meja 5 Saja</option>
+        <option value="10">Meja 10 Saja</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Container Standee -->
+  <div class="container mb-5">
+    <div class="row g-4 justify-content-center standee-container" id="standeeWrapper">
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-danger" role="status"></div>
+        <p class="mt-2 text-muted">Memverifikasi otentikasi Admin & memuat barcode...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. KEAMANAN AKSES: HANYA ADMIN YANG BOLEH MEMBUKA HALAMAN INI!
+    const user = JSON.parse(localStorage.getItem('cafe_user') || '{}');
+    if (user.role !== 'admin') {
+      alert("⚠️ AKSES DITOLAK!\n\nHalaman Cetak & Barcode Standee Meja hanya boleh dibuka dan dicetak oleh SUPER ADMIN.\n\nAnda akan dialihkan ke halaman login.");
+      window.location.href = 'login.html';
+    }
+
+    async function renderStandees() {
+      const wrapper = document.getElementById('standeeWrapper');
+      const filter = document.getElementById('tableFilter').value;
+      
+      const tablesToRender = filter === 'all' 
+        ? Array.from({length: 20}, (_, i) => i + 1)
+        : [parseInt(filter)];
+
+      wrapper.innerHTML = '';
+
+      for (const tableNum of tablesToRender) {
+        try {
+          // Kirim header otentikasi admin
+          const res = await fetch(`/api/qr/table/${tableNum}`, {
+            headers: { 'x-user-email': user.email }
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            const cardCol = document.createElement('div');
+            cardCol.className = 'col-md-4 col-sm-6 d-flex justify-content-center';
+            cardCol.innerHTML = `
+              <div class="standee-card">
+                <div class="standee-header">
+                  <i class="bi bi-cup-hot-fill me-1"></i> KOPI & MIE CAFE
+                </div>
+                <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing:1px;">Nomor Meja</div>
+                <div class="table-number-box">${tableNum}</div>
+                
+                <div class="qr-frame">
+                  <img src="${data.qrDataUrl}" alt="QR Meja ${tableNum}">
+                </div>
+
+                <div class="fw-bold fs-6 text-dark mt-1">
+                  <i class="bi bi-camera me-1 text-danger"></i> SCAN UNTUK PESAN
+                </div>
+                <p class="text-muted" style="font-size:0.75rem; margin-bottom: 8px;">
+                  1. Scan dengan Kamera HP / QR Scanner<br>
+                  2. Pilih Menu & Level Pedas<br>
+                  3. Bayar Langsung Tanpa Antre
+                </p>
+                <div class="small fw-semibold text-danger">
+                  <span class="token-badge"><i class="bi bi-shield-check text-success"></i> Token: ${data.token}</span>
+                </div>
+              </div>
+            `;
+            wrapper.appendChild(cardCol);
+          } else {
+            alert(data.message);
+            window.location.href = 'login.html';
+            return;
+          }
+        } catch (err) {
+          console.error(`Gagal load QR untuk meja ${tableNum}:`, err);
+        }
+      }
+    }
+
+    // 2. FITUR REFRESH BARCODE MEJA DENGAN KONFIRMASI ADMIN & NOTIFIKASI PEMBERITAHUAN
+    async function promptRefreshBarcode() {
+      const target = prompt("Pilih Meja yang ingin di-refresh barcode-nya:\n\n- Ketik 'all' untuk refresh SEMUA meja (1 s/d 20)\n- Atau ketik angka nomor meja tertentu (contoh: 5)", "all");
+      if (!target) return;
+
+      const alasan = prompt("Masukkan alasan refresh barcode (Contoh: Stiker meja rusak / rotasi berkala):", "Penyegaran rutin barcode cafe");
+
+      // Konfirmasi final
+      const confirmRefresh = confirm(`⚠️ KONFIRMASI PERUBAHAN BARCODE:\n\nAnda yakin ingin me-refresh barcode ${target === 'all' ? 'SEMUA MEJA (1-20)' : 'Meja ' + target}?\n\nSetelah di-refresh, barcode lama yang tertempel di meja TIDAK BISA DIPAKAI LAGI dan Anda harus mencetak stiker baru.`);
+      
+      if (!confirmRefresh) return;
+
+      try {
+        const res = await fetch('/api/admin/refresh-barcode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-email': user.email
+          },
+          body: JSON.stringify({
+            tableNumber: target,
+            reason: alasan
+          })
+        });
+
+        const resData = await res.json();
+        if (resData.success) {
+          // Tampilkan notifikasi pemberitahuan
+          const alertBox = document.getElementById('refreshAlertBox');
+          document.getElementById('refreshAlertTitle').innerText = `✅ PEMBERITAHUAN: ${resData.message}`;
+          document.getElementById('refreshAlertDesc').innerText = `Waktu refresh: ${resData.timestamp}. Token acak baru telah aktif, segera cetak stiker barcode baru di bawah ini.`;
+          alertBox.style.display = 'block';
+
+          // Render ulang barcode dengan token baru
+          renderStandees();
+        } else {
+          alert('Gagal merefresh barcode: ' + resData.message);
+        }
+      } catch (e) {
+        alert('Terjadi kesalahan koneksi saat me-refresh barcode.');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderStandees);
+  </script>
+</body>
+</html>

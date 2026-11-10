@@ -1,0 +1,119 @@
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM UNTUK SEMUA DEVICE (MOBILE ANDROID, IOS, TABLET, LAPTOP)
+   ========================================================================== */
+
+:root {
+  --primary-color: #ea580c;
+  --primary-hover: #c2410c;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+/* 1. Global Touch & Text Smoothing untuk iOS & Android */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  padding-top: var(--safe-area-top);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+  touch-action: manipulation;
+}
+
+/* 2. Tombol dan Input yang Ramah Sentuhan (Touch Target >= 44px) */
+button, .btn, .nav-link, input, select, textarea {
+  touch-action: manipulation;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* 3. Penyesuaian Bottom Bar Khusus Ponsel (iOS Home Indicator & Android Nav) */
+.bottom-bar, .fixed-bottom-bar {
+  padding-bottom: calc(12px + var(--safe-area-bottom)) !important;
+}
+
+/* 4. Scrollbar Halus & Nyaman */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* 5. Responsive Grid & Table Styles */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 6. Breakpoint Utility Classes */
+/* Handphone Kecil & Menengah (iPhone SE, Galaxy A series, iPhone Standard <= 576px) */
+@media (max-width: 576px) {
+  .display-6 {
+    font-size: 1.5rem !important;
+  }
+  h1, .h1 { font-size: 1.6rem !important; }
+  h2, .h2 { font-size: 1.4rem !important; }
+  h3, .h3 { font-size: 1.25rem !important; }
+  h4, .h4 { font-size: 1.15rem !important; }
+  h5, .h5 { font-size: 1rem !important; }
+
+  .container, .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .stat-card {
+    padding: 0.9rem !important;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .modal-content {
+    border-radius: 1.25rem !important;
+  }
+}
+
+/* Tablet & iPad (Portrait & Landscape: 577px - 991px) */
+@media (min-width: 577px) and (max-width: 991.98px) {
+  .tablet-col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+  .sidebar {
+    position: static;
+    height: auto;
+    min-height: auto;
+  }
+}
+
+/* Laptop & Desktop (>= 992px) */
+@media (min-width: 992px) {
+  .desktop-sticky {
+    position: sticky;
+    top: 1.5rem;
+  }
+}

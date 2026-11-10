@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Cafe & Eatery - Smart QR Order System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    :root {
+      --primary: #ea580c;
+      --secondary: #1e293b;
+      --bg: #f8fafc;
+    }
+    body {
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #334155;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 3.5rem 1.5rem 2.5rem;
+      border-radius: 0 0 2rem 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .feature-card {
+      background: white;
+      border-radius: 1.25rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+    .icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+    .role-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Hero Header -->
+  <header class="hero-banner text-center">
+    <div class="container py-2">
+      <div class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+        <i class="bi bi-qr-code-scan me-1"></i> Smart QR Dining & Kitchen Management
+      </div>
+      <h1 class="display-6 fw-bold mb-3">Sistem Terpadu Cafe & Resto</h1>
+      <p class="text-light opacity-75 max-w-xl mx-auto mb-4" style="max-width: 650px;">
+        Pemesanan mandiri meja ala Mie Gacoan, pemantauan dapur real-time untuk pelanggan, serta manajemen hak akses staf terpusat via Google (Gmail).
+      </p>
+      
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="order.html?table=5" class="btn btn-warning btn-lg fw-bold px-4 py-2 rounded-pill shadow" style="background:#ea580c; border:none; color:white;">
+          <i class="bi bi-phone me-2"></i> Buka Menu Pelanggan (Meja 5)
+        </a>
+        <a href="login.html" class="btn btn-outline-light btn-lg fw-semibold px-4 py-2 rounded-pill">
+          <i class="bi bi-shield-lock me-2"></i> Portal Login Admin & Staff
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Pilihan Menu & Modul Sistem -->
+  <main class="container my-5">
+    
+    <div class="text-center mb-4">
+      <h3 class="fw-bold text-dark">Modul & Hak Akses Pengguna</h3>
+      <p class="text-muted small">Pilih peran atau buka halaman yang ingin diuji</p>
+    </div>
+
+    <div class="row g-4">
+      
+      <!-- Modul 1: Customer (Pelanggan) -->
+      <div class="col-md-6 col-lg-3">
+        <a href="order.html?table=5" class="feature-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="icon-box bg-danger-subtle text-danger">
+              <i class="bi bi-phone-fill"></i>
+            </div>
+            <span class="role-badge bg-danger-subtle text-danger">CUSTOMER</span>
+          </div>
+          <h5 class="fw-bold mb-2">Pemesanan & Live Dapur</h5>
+          <p class="text-muted small mb-3">
+            Scan QR meja, pilih makanan & level pedas, checkout QRIS/Kasir, dan pantau langsung proses memasak serta estimasi menit selesai.
+          </p>
+          <span class="text-danger fw-semibold small">Buka Aplikasi Tamu <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+
+      <!-- Modul 2: Admin Super Control (Login Gmail) -->
+      <div class="col-md-6 col-lg-3">
+        <a href="login.html" class="feature-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="icon-box bg-warning-subtle text-warning">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <span class="role-badge bg-warning-subtle text-dark">SUPER ADMIN</span>
+          </div>
+          <h5 class="fw-bold mb-2">Panel Admin (Gmail)</h5>
+          <p class="text-muted small mb-3">
+            Login dengan Google / Gmail untuk memantau semua proses, omset, kelola menu, dan memberi akses ke akun Gmail kasir & koki.
+          </p>
+          <span class="text-warning-emphasis fw-semibold small">Buka Admin Panel <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+
+      <!-- Modul 3: Dapur & Barista KDS -->
+      <div class="col-md-6 col-lg-3">
+        <a href="kitchen.html" class="feature-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="icon-box bg-primary-subtle text-primary">
+              <i class="bi bi-cup-hot-fill"></i>
+            </div>
+            <span class="role-badge bg-primary-subtle text-primary">DAPUR & BARISTA</span>
+          </div>
+          <h5 class="fw-bold mb-2">Layar Monitor Dapur</h5>
+          <p class="text-muted small mb-3">
+            Display koki penerima pesanan live. Mulai memasak, tandai pesanan siap saji, dan hitung estimasi penyajian per meja.
+          </p>
+          <span class="text-primary fw-semibold small">Buka Display Dapur <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+
+      <!-- Modul 4: Kasir POS -->
+      <div class="col-md-6 col-lg-3">
+        <a href="cashier.html" class="feature-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="icon-box bg-success-subtle text-success">
+              <i class="bi bi-cash-stack"></i>
+            </div>
+            <span class="role-badge bg-success-subtle text-success">KASIR</span>
+          </div>
+          <h5 class="fw-bold mb-2">Layar Kasir & POS</h5>
+          <p class="text-muted small mb-3">
+            Konfirmasi pembayaran tunai/EDC dari tamu yang memilih bayar di kasir, verifikasi struk dan tagihan meja secara instan.
+          </p>
+          <span class="text-success fw-semibold small">Buka Layar Kasir <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Standee QR Meja -->
+    <div class="mt-4 p-4 bg-white rounded-4 border shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="fs-1 text-dark"><i class="bi bi-printer-fill"></i></div>
+        <div>
+          <h5 class="fw-bold mb-1">Standee & Barcode QR Nomor Meja (1 s/d 20)</h5>
+          <p class="text-muted small mb-0">Cetak stiker meja akrilik siap tempel yang mengarahkan pelanggan langsung ke aplikasi pemesanan.</p>
+        </div>
+      </div>
+      <a href="qr-generator.html" class="btn btn-dark rounded-pill fw-semibold px-4">
+        <i class="bi bi-qr-code me-1"></i> Buka Standee Generator
+      </a>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-4 text-muted small border-top">
+    &copy; 2026 Cafe Smart QR Order System &bull; Responsif untuk Android, iPhone, iPad/Tablet & Laptop
+  </footer>
+
+</body>
+</html>

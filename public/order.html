@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Menu Pemesanan Cafe - Scan & Order</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+    }
+    body {
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-bottom: 90px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .top-header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+    .category-pills {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 0.5rem 0;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar {
+      display: none;
+    }
+    .category-btn {
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #64748b;
+      margin-right: 8px;
+      transition: all 0.2s;
+    }
+    .category-btn.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .menu-card {
+      background: white;
+      border-radius: 1rem;
+      border: 1px solid #f1f5f9;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .menu-card:active {
+      transform: scale(0.98);
+    }
+    .menu-card img {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+    }
+    .menu-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      padding: 12px 16px;
+      z-index: 1030;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    .table-indicator {
+      cursor: pointer;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .timeline-step {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .timeline-step:last-child {
+      padding-bottom: 0;
+    }
+    .timeline-step::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 34px;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+    .timeline-step:last-child::before {
+      display: none;
+    }
+    .timeline-step.active::before {
+      background: #10b981;
+    }
+    .timeline-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      font-size: 1rem;
+      z-index: 1;
+      background: #e2e8f0;
+      color: #64748b;
+    }
+    .timeline-step.done .timeline-icon {
+      background: #10b981;
+      color: white;
+    }
+    .timeline-step.current .timeline-icon {
+      background: #ea580c;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.2);
+    }
+    .bank-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .success-celebrate-img {
+      max-height: 180px;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    @media (min-width: 768px) {
+      .menu-card img {
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="top-header shadow-sm">
+    <div class="container py-2">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-cup-hot-fill text-danger me-1"></i> Cafe & Mie Spesial</h5>
+          <small class="text-muted">Smart QR Dining Experience</small>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+          <!-- Tombol Status Pesanan Aktif Pelanggan -->
+          <button id="btnActiveOrderBadge" class="btn btn-sm btn-outline-danger rounded-pill fw-bold" style="display:none;" onclick="openActiveOrderModal()">
+            <i class="bi bi-clock-history me-1"></i> Status Dapur
+          </button>
+          
+          <button id="btnOpenScanner" class="btn btn-sm btn-outline-dark rounded-pill" title="Scan Barcode Meja">
+            <i class="bi bi-qr-code-scan"></i>
+          </button>
+          <div class="table-indicator d-flex align-items-center gap-1" id="btnSelectTable" data-bs-toggle="modal" data-bs-target="#modalTableSelect">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="currentTableDisplay">Pilih Meja</span>
+            <i class="bi bi-chevron-down small"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kategori Filter Dinamis -->
+      <div class="category-pills d-flex align-items-center mt-2" id="categoryContainer">
+        <button class="category-btn active" onclick="filterCategory('All', this)"><i class="bi bi-grid-fill me-1"></i> Semua</button>
+        <button class="category-btn" onclick="filterCategory('FAVORITE', this)">⭐ Terlaris</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Meja Belum Dipilih -->
+  <div id="tableAlert" class="alert alert-warning alert-dismissible fade show m-3 rounded-3" style="display:none;" role="alert">
+    <strong><i class="bi bi-exclamation-triangle-fill"></i> Anda belum memilih nomor meja!</strong> 
+    Silakan scan barcode di atas meja Anda atau klik tombol meja di atas sebelum memesan.
+  </div>
+
+  <!-- Content Menu List -->
+  <main class="container py-3">
+    <div class="row g-3" id="menuList">
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-warning" role="status"></div>
+        <p class="mt-2 text-muted">Memuat menu lezat cafe...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Floating Cart Bar -->
+  <div class="bottom-bar">
+    <div class="container d-flex align-items-center justify-content-between p-0">
+      <div>
+        <div class="small text-muted" id="cartCountText">0 Menu dipilih</div>
+        <div class="fw-bold fs-5 text-dark" id="cartTotalText">Rp 0</div>
+      </div>
+      <!-- Tombol Lanjut Bayar dengan Validasi Ketat -->
+      <button class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm text-white" id="btnViewCart" onclick="handleOpenCart()" style="background-color: var(--primary); border: none;">
+        <i class="bi bi-bag-check-fill me-1"></i> Lanjut Bayar
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST / NOTIFIKASI ERROR JIKA BELUM MEMASUKKAN PESANAN 1 PUN -->
+  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 2000;">
+    <div id="emptyCartToast" class="toast align-items-center text-bg-danger border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex p-2">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+          <div>
+            <strong class="d-block">Pesanan Masih Kosong!</strong>
+            <span class="small">Anda belum memilih pesanan 1 pun. Silakan klik menu makanan / minuman favorit Anda terlebih dahulu sebelum masuk ke pembayaran.</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Pilih Meja -->
+  <div class="modal fade" id="modalTableSelect" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Pilih Nomor Meja Cafe</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">Pilih meja tempat Anda duduk saat ini atau scan QR pada stiker meja.</p>
+          
+          <div class="d-flex justify-content-center mb-3">
+            <button class="btn btn-outline-danger btn-sm rounded-pill w-100 py-2" onclick="startScannerModal()">
+              <i class="bi bi-camera-fill me-1"></i> Buka Kamera Scan Barcode Meja
+            </button>
+          </div>
+
+          <div class="row g-2" id="tableGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Kamera Scanner QR Code -->
+  <div class="modal fade" id="modalScanner" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-qr-code-scan text-danger me-1"></i> Scan Barcode Meja</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="stopScanner()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="text-muted small">Arahkan kamera ke QR Code yang tertempel di meja Anda.</p>
+          <div id="reader" style="width: 100%; border-radius: 12px; overflow: hidden;" class="mx-auto border"></div>
+          <div id="scanResult" class="mt-2 fw-semibold text-success"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Detail Menu & Pilihan Level Pedas (Gacoan Style) -->
+  <div class="modal fade" id="modalItemDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="itemDetailName">Menu Name</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <img id="itemDetailImg" src="" class="w-100 rounded-3 mb-3" style="height: 180px; object-fit: cover;" alt="">
+          <p class="text-muted small" id="itemDetailDesc"></p>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="fw-bold fs-5 text-danger" id="itemDetailPrice">Rp 0</div>
+            <div class="small text-muted" id="itemDetailPrep"><i class="bi bi-clock-history"></i> ~10 Menit</div>
+          </div>
+
+          <div id="levelPedasSection" class="mb-3 p-3 bg-light rounded-3" style="display:none;">
+            <label class="form-label fw-bold small text-uppercase text-secondary">
+              <i class="bi bi-fire text-danger"></i> Pilih Level Pedas (Khas Mie Gacoan):
+            </label>
+            <div class="d-flex flex-wrap gap-2" id="levelButtons">
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn active" data-level="Level 0 (Tidak Pedas)">Level 0</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn" data-level="Level 1">Level 1</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn" data-level="Level 2">Level 2</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn" data-level="Level 3">Level 3</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn" data-level="Level 4 (Extra Pedas)">Level 4 🔥</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm level-btn" data-level="Level 6 (Pedas Mampus)">Level 6 💀</button>
+            </div>
+          </div>
+
+          <div id="tempSection" class="mb-3 p-3 bg-light rounded-3" style="display:none;">
+            <label class="form-label fw-bold small text-uppercase text-secondary">
+              <i class="bi bi-cup-straw text-primary"></i> Sajian:
+            </label>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-primary btn-sm temp-btn active" data-temp="Dingin (Ice)">Dingin (Ice)</button>
+              <button type="button" class="btn btn-outline-primary btn-sm temp-btn" data-temp="Panas (Hot)">Panas (Hot)</button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-secondary">Catatan Khusus (Opsional):</label>
+            <input type="text" id="itemDetailNotes" class="form-control form-control-sm" placeholder="Contoh: jangan pakai daun bawang, sedikit manis...">
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+            <span class="fw-bold">Jumlah:</span>
+            <div class="d-flex align-items-center gap-3">
+              <button class="btn btn-sm btn-outline-secondary rounded-circle" style="width:34px;height:34px" onclick="changeModalQty(-1)">-</button>
+              <span class="fw-bold fs-5" id="modalQtyDisplay">1</span>
+              <button class="btn btn-sm btn-outline-secondary rounded-circle" style="width:34px;height:34px" onclick="changeModalQty(1)">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-warning w-100 fw-bold py-2 rounded-pill text-white" id="btnAddItemConfirm" style="background-color: var(--primary);">
+            Tambahkan ke Keranjang
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Keranjang & Checkout -->
+  <div class="modal fade" id="modalCart" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="modal-title fw-bold">Rincian Pesanan</h5>
+            <div class="small text-muted" id="cartModalTableInfo">Meja: Belum dipilih</div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body py-2">
+          
+          <div id="cartItemsList" class="divide-y"></div>
+
+          <div class="p-3 bg-light rounded-3 my-3">
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-secondary mb-1">
+                Nama Pemesan <span class="text-danger">* (Wajib Diisi)</span>:
+              </label>
+              <input type="text" id="custNameInput" class="form-control form-control-sm" placeholder="Ketik nama Anda (contoh: Budi / Sarah)">
+              <div id="custNameError" class="text-danger mt-1 small fw-semibold" style="display:none; font-size:0.75rem;">
+                <i class="bi bi-exclamation-circle-fill me-1"></i> Nama pemesan wajib diisi sebelum memesan!
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label fw-bold small text-secondary mb-2">Pilih Metode Pembayaran:</label>
+              <div class="d-flex flex-column gap-2" id="paymentOptionsContainer">
+                
+                <div>
+                  <input type="radio" class="btn-check" name="payMethod" id="payQRIS" value="QRIS" checked>
+                  <label class="btn btn-outline-danger w-100 text-start p-2 rounded-3 small d-flex align-items-center justify-content-between" for="payQRIS">
+                    <div>
+                      <i class="bi bi-qr-code text-danger fs-5 me-2 align-middle"></i>
+                      <strong>QRIS Otomatis</strong>
+                      <div class="text-muted ms-4" style="font-size:0.7rem;" id="cartQrisSubtext">GoPay, OVO, ShopeePay, BCA, DANA</div>
+                    </div>
+                    <span class="badge bg-danger">Instan</span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="radio" class="btn-check" name="payMethod" id="payBank" value="Transfer Bank">
+                  <label class="btn btn-outline-primary w-100 text-start p-2 rounded-3 small d-flex align-items-center justify-content-between" for="payBank">
+                    <div>
+                      <i class="bi bi-bank2 text-primary fs-5 me-2 align-middle"></i>
+                      <strong>Transfer Bank</strong>
+                      <div class="text-muted ms-4" style="font-size:0.7rem;" id="cartBankSubtext">BCA / Mandiri / BRI</div>
+                    </div>
+                    <span class="badge bg-primary">m-Banking</span>
+                  </label>
+                </div>
+
+                <div>
+                  <input type="radio" class="btn-check" name="payMethod" id="payKasir" value="Kasir">
+                  <label class="btn btn-outline-secondary w-100 text-start p-2 rounded-3 small d-flex align-items-center justify-content-between" for="payKasir">
+                    <div>
+                      <i class="bi bi-cash-stack text-secondary fs-5 me-2 align-middle"></i>
+                      <strong>Bayar di Kasir</strong>
+                      <div class="text-muted ms-4" style="font-size:0.7rem;">Tunai / Kartu EDC</div>
+                    </div>
+                    <span class="badge bg-secondary">Kasir</span>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="border-top pt-2">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Subtotal:</span>
+              <span id="billSubtotal">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Pajak & Servis (10%):</span>
+              <span id="billTax">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold fs-5 text-dark mt-2 border-top pt-2">
+              <span>Total Bayar:</span>
+              <span class="text-danger" id="billTotal">Rp 0</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-warning w-100 fw-bold py-2 rounded-pill text-white shadow" id="btnSubmitOrder" style="background-color: var(--primary);">
+            <i class="bi bi-send-check me-1"></i> Konfirmasi & Bayar Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOTIFIKASI PEMBAYARAN BERHASIL & UCAPAN TERIMA KASIH DENGAN GAMBAR CUSTOM ADMIN -->
+  <div class="modal fade" id="modalPaymentSuccess" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 p-3 shadow-lg">
+        <div class="modal-header border-0 pb-0 justify-content-end">
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center py-2">
+          <div class="d-inline-flex p-3 bg-success bg-opacity-10 text-success rounded-circle mb-3">
+            <i class="bi bi-check-circle-fill fs-1"></i>
+          </div>
+          <h4 class="fw-bold text-success mb-1" id="bannerSuccessTitle">Pembayaran Berhasil! Terima Kasih</h4>
+          <p class="small text-muted mb-3" id="bannerSuccessMsg">Pesanan Anda telah diterima dan langsung masuk ke antrean koki dapur & barista.</p>
+          
+          <!-- Gambar Custom Super Admin -->
+          <div id="bannerImgWrapper" class="my-2" style="display:none;">
+            <img id="bannerCustomImg" src="" alt="Terima Kasih" class="success-celebrate-img shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80'">
+          </div>
+
+          <div class="small fw-semibold text-secondary mt-3" id="bannerSubMsg">Silakan duduk santai di meja Anda, pesanan lezat akan segera diantar!</div>
+          <div class="small text-muted fst-italic mt-1" id="bannerSocialText" style="font-size:0.75rem;"></div>
+        </div>
+        <div class="modal-footer border-0 pt-2 flex-column">
+          <button type="button" class="btn btn-warning w-100 fw-bold py-2 rounded-pill text-white shadow-sm" onclick="openKitchenTrackFromSuccess()" style="background-color: var(--primary); border: none;">
+            <i class="bi bi-clock-history me-1"></i> Pantau Status Dapur
+          </button>
+          <button type="button" class="btn btn-outline-secondary w-100 rounded-pill py-2 mt-2" data-bs-dismiss="modal">
+            Tutup & Kembali ke Menu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PESANAN SELESAI DISAJIKAN DARI DAPUR -->
+  <div class="modal fade" id="modalOrderCompleted" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 p-3 text-center shadow-lg">
+        <div class="modal-body py-4">
+          <div class="d-inline-flex p-3 bg-success text-white rounded-circle mb-3 shadow-sm">
+            <i class="bi bi-bell-fill fs-1"></i>
+          </div>
+          <h4 class="fw-bold text-dark mb-2">Pesanan Telah Selesai Disajikan! 🍽️</h4>
+          <p class="text-muted small mb-3" id="orderCompletedMsg">
+            Semua hidangan untuk Meja Anda telah selesai disiapkan oleh koki dapur dan dihidangkan ke meja Anda.
+          </p>
+          <div class="p-3 bg-light rounded-3 small text-secondary mb-3 border">
+            <i class="bi bi-heart-fill text-danger me-1"></i> Selamat menikmati hidangan lezat Cafe & Mie Spesial! Terima kasih atas kunjungan Anda.
+          </div>
+          <button type="button" class="btn btn-dark w-100 rounded-pill fw-semibold py-2" data-bs-dismiss="modal">
+            Selesai & Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LIVE TRACKING PROSES DAPUR (MURNI ESTIMASI & STATUS DAPUR SAAT SUDAH BAYAR) -->
+  <div class="modal fade" id="modalLiveTracking" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 p-3">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <span class="badge bg-danger mb-1" id="trackHeaderBadge">LIVE STATUS DAPUR</span>
+            <h5 class="modal-title fw-bold" id="trackModalTitle">Status Masak Dapur</h5>
+            <small class="text-muted" id="trackOrderId">#ORD-000000</small>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        
+        <div class="modal-body py-3">
+
+          <!-- BANNER MENUNGGU PEMBAYARAN (HANYA MUNCUL JIKA BELUM BAYAR / PENDING) -->
+          <div id="waitingPaymentBanner" class="p-3 bg-warning bg-opacity-10 border border-warning rounded-4 text-center mb-3" style="display:none;">
+            <div class="d-inline-flex p-2 bg-warning text-dark rounded-circle mb-2">
+              <i class="bi bi-hourglass-split fs-4"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-1">Menunggu Pembayaran</h5>
+            <p class="small text-muted mb-1" id="waitingPaymentSubtext">Silakan selesaikan pembayaran agar pesanan Anda segera diproses oleh dapur.</p>
+            <span class="badge bg-danger rounded-pill px-3 py-1" id="waitingPaymentBadge">STATUS: BELUM DIBAYAR</span>
+          </div>
+
+          <!-- BOX QRIS DARI PENGATURAN ADMIN (HANYA MUNCUL JIKA BELUM BAYAR) -->
+          <div id="trackQrisBox" class="p-3 border rounded-4 bg-light text-center mb-4" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-danger">QRIS PEMBAYARAN CAFE</span>
+              <span class="badge bg-secondary" id="qrisStatusPill">Menunggu Scan</span>
+            </div>
+            <h6 class="fw-bold mb-0 text-dark" id="displayQrisMerchant">KOPI & MIE CAFE</h6>
+            <div class="small text-muted mb-2" id="displayQrisNmid">NMID: ID1020304050607</div>
+            <div id="qrisImgContainer">
+              <img id="displayQrisImg" src="" class="img-fluid rounded border p-2 bg-white shadow-sm" style="max-width: 175px;" alt="QRIS">
+            </div>
+            <div class="fw-bold fs-5 text-danger mt-2" id="trackTotalPayQris">Rp 0</div>
+            <div class="small text-muted mt-1" id="displayQrisNotes">Mendukung GoPay, OVO, ShopeePay, DANA, BCA, & m-Banking.</div>
+
+            <!-- Tombol Konfirmasi Cek Status Pembayaran QRIS Pelanggan -->
+            <div class="mt-3 pt-2 border-top">
+              <button class="btn btn-warning w-100 fw-bold rounded-pill shadow-sm" id="btnCheckQrisPaymentStatus" onclick="verifyCustomerPaymentNow()">
+                <i class="bi bi-arrow-repeat me-1"></i> Saya Sudah Bayar (Cek Status Pembayaran)
+              </button>
+              <div class="small text-muted mt-1" style="font-size:0.75rem;">
+                <i class="bi bi-shield-check text-success me-1"></i> Sistem akan memverifikasi otomatis melalui Payment Gateway Webhook.
+              </div>
+            </div>
+          </div>
+
+          <!-- BOX TRANSFER BANK DARI PENGATURAN ADMIN (HANYA MUNCUL JIKA BELUM BAYAR) -->
+          <div id="trackBankBox" class="p-3 border rounded-4 bg-light text-start mb-4" style="display:none;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="badge bg-primary">REKENING BANK RESMI CAFE</span>
+              <span class="fw-bold text-danger fs-6" id="trackTotalPayBank">Rp 0</span>
+            </div>
+            <div class="bank-box mb-2">
+              <div class="small text-muted">Bank Tujuan:</div>
+              <h6 class="fw-bold text-dark mb-2" id="displayBankName">BCA (Bank Central Asia)</h6>
+              <div class="small text-muted">Nomor Rekening:</div>
+              <div class="d-flex align-items-center justify-content-between bg-light p-2 rounded border mb-2">
+                <span class="fw-bold fs-5 text-primary" id="displayBankAccount">8730-1928-33</span>
+                <button class="btn btn-sm btn-outline-primary py-0" onclick="copyBankAccount()">
+                  <i class="bi bi-clipboard"></i> Salin
+                </button>
+              </div>
+              <div class="small text-muted">Atas Nama:</div>
+              <div class="fw-bold small text-dark" id="displayBankHolder">CAFE RESTO NUSANTARA PT</div>
+            </div>
+            <div class="small text-muted fst-italic" id="displayBankNotes">
+              Sertakan nomor meja Anda pada berita transfer. Kasir akan otomatis memverifikasi mutasi.
+            </div>
+          </div>
+
+          <!-- BOX BAYAR DI KASIR (HANYA MUNCUL JIKA BELUM BAYAR) -->
+          <div id="trackCashBox" class="p-3 border rounded-4 bg-light text-center mb-4" style="display:none;">
+            <i class="bi bi-wallet2 fs-2 text-warning"></i>
+            <h6 class="fw-bold mt-2">Menunggu Pembayaran di Kasir</h6>
+            <p class="small text-muted mb-0">Silakan sebutkan <strong>Nomor Meja Anda</strong> ke kasir untuk proses pembayaran tunai/EDC.</p>
+          </div>
+
+          <!-- Estimasi Waktu Selesai (Fokus Utama Status Dapur) -->
+          <div class="p-3 bg-warning bg-opacity-10 rounded-4 border border-warning text-center mb-4" id="trackEstimatedBox">
+            <span class="text-warning-emphasis small fw-bold text-uppercase">Estimasi Selesai Disiapkan:</span>
+            <div class="display-6 fw-bold text-dark my-1" id="trackEstimatedTime">~12 Menit</div>
+            <div class="small text-muted" id="trackTargetClock">Target Selesai: 14:20 WIB</div>
+          </div>
+
+          <!-- Visual Timeline Proses Dapur (Fokus Utama Status Dapur) -->
+          <div class="px-2 mb-3" id="kitchenTimelineContainer"></div>
+
+          <!-- Rincian Pesanan Singkat (Fokus Utama Status Dapur) -->
+          <div class="pt-3 border-top">
+            <h6 class="fw-bold small mb-2 text-secondary"><i class="bi bi-receipt me-1"></i> Rincian Menu yang Sedang Dimasak:</h6>
+            <div id="trackItemsSummary" class="small text-muted"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-dark w-100 rounded-pill fw-semibold" data-bs-dismiss="modal">
+            Tutup (Tetap Pantau di Atas)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let allMenus = [];
+    let currentCategory = 'All';
+    let categoriesList = [];
+    let selectedTable = null;
+    let cart = [];
+    let modalActiveItem = null;
+    let modalItemQty = 1;
+    let html5QrScanner = null;
+    let currentActiveOrderId = localStorage.getItem('cafe_active_order_id') || null;
+    let paymentSuccessNotified = false;
+    let orderCompletedNotified = false;
+    let cafePaymentConfig = null;
+    let successBannerConfig = null;
+
+    function initTableFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tableParam = urlParams.get('table');
+      if (tableParam) {
+        setTable(parseInt(tableParam));
+      } else {
+        document.getElementById('tableAlert').style.display = 'block';
+      }
+    }
+
+    function setTable(num) {
+      selectedTable = num;
+      document.getElementById('currentTableDisplay').innerHTML = `Meja <strong>${num}</strong>`;
+      document.getElementById('cartModalTableInfo').innerText = `Meja: No. ${num}`;
+      document.getElementById('tableAlert').style.display = 'none';
+
+      const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?table=' + num;
+      window.history.pushState({path:newUrl},'',newUrl);
+
+      // Cek apakah meja ini ada pesanan yang sedang aktif di dapur
+      checkTableActiveOrder(num);
+    }
+
+    async function checkTableActiveOrder(tableNum) {
+      if (!tableNum) return;
+      try {
+        const res = await fetch(`/api/table/${tableNum}/active-order`);
+        const data = await res.json();
+        if (data.success && data.activeOrder && data.activeOrder.status !== 'Selesai') {
+          currentActiveOrderId = data.activeOrder.id;
+          localStorage.setItem('cafe_active_order_id', currentActiveOrderId);
+          document.getElementById('btnActiveOrderBadge').style.display = 'inline-block';
+          startOrderPolling();
+        } else {
+          // Meja tidak memiliki pesanan aktif (atau pesanan sudah 'Selesai')
+          localStorage.removeItem('cafe_active_order_id');
+          currentActiveOrderId = null;
+          document.getElementById('btnActiveOrderBadge').style.display = 'none';
+          if (pollingTimer) {
+            clearInterval(pollingTimer);
+            pollingTimer = null;
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memeriksa pesanan meja:', err);
+      }
+    }
+
+    // 1. VALIDASI KETAT: JIKA BELUM MEMASUKKAN PESANAN 1 PUN, DILARANG MASUK MENU BAYAR
+    function handleOpenCart() {
+      if (cart.length === 0) {
+        // Tampilkan notifikasi toast merah & tolak buka modal pembayaran
+        const toastEl = document.getElementById('emptyCartToast');
+        const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+        toast.show();
+        return;
+      }
+      
+      // Jika sudah ada pesanan, baru izinkan buka keranjang & checkout
+      new bootstrap.Modal(document.getElementById('modalCart')).show();
+    }
+
+    async function loadSuccessBannerConfig() {
+      try {
+        const res = await fetch('/api/success-banner-settings');
+        const data = await res.json();
+        if (data.success && data.data) {
+          successBannerConfig = data.data;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadPaymentConfig() {
+      try {
+        const res = await fetch('/api/payment-settings');
+        const data = await res.json();
+        if (data.success && data.data) {
+          cafePaymentConfig = data.data;
+          document.getElementById('cartQrisSubtext').innerText = `${cafePaymentConfig.qrisMerchantName} (BCA, GoPay, OVO, Shopee)`;
+          document.getElementById('cartBankSubtext').innerText = `${cafePaymentConfig.bankName} - No. ${cafePaymentConfig.bankAccountNumber}`;
+
+          if (!cafePaymentConfig.qrisEnabled) document.getElementById('payQRIS').parentElement.style.display = 'none';
+          if (!cafePaymentConfig.bankEnabled) document.getElementById('payBank').parentElement.style.display = 'none';
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadMenu() {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success) {
+          allMenus = data.data || [];
+          if (data.categories && Array.isArray(data.categories)) {
+            categoriesList = data.categories;
+            renderCategories();
+          }
+          renderMenus();
+        }
+      } catch (err) {
+        console.error('Gagal mengambil menu:', err);
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoryContainer');
+      if (!container) return;
+
+      let html = `
+        <button class="category-btn ${currentCategory === 'All' ? 'active' : ''}" onclick="filterCategory('All', this)">
+          <i class="bi bi-grid-fill me-1"></i> Semua
+        </button>
+        <button class="category-btn ${currentCategory === 'FAVORITE' ? 'active' : ''}" onclick="filterCategory('FAVORITE', this)">
+          ⭐ Terlaris
+        </button>
+      `;
+
+      categoriesList.forEach(cat => {
+        const isActive = currentCategory === cat.name ? 'active' : '';
+        const icon = cat.icon ? `${cat.icon} ` : '';
+        html += `
+          <button class="category-btn ${isActive}" onclick="filterCategory('${encodeURIComponent(cat.name)}', this, true)">
+            ${icon}${cat.name}
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderMenus() {
+      const container = document.getElementById('menuList');
+      let filtered = [];
+
+      if (currentCategory === 'All') {
+        filtered = allMenus;
+      } else if (currentCategory === 'FAVORITE') {
+        filtered = allMenus.filter(m => m.popular === true);
+      } else {
+        filtered = allMenus.filter(m => m.category === currentCategory);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <div class="text-muted fs-5 mb-2"><i class="bi bi-inbox fs-1"></i></div>
+            <p class="text-muted fw-semibold">Tidak ada menu di kategori "${currentCategory === 'FAVORITE' ? 'Terlaris' : currentCategory}".</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2dot4 mb-3">
+          <div class="menu-card h-100 d-flex flex-column position-relative cursor-pointer" onclick="openItemModal(${item.id})">
+            ${item.popular ? `<span class="badge bg-danger menu-badge"><i class="bi bi-star-fill"></i> Terlaris</span>` : ''}
+            <img src="${item.image}" alt="${item.name}">
+            <div class="p-2 p-sm-3 d-flex flex-column flex-grow-1 justify-content-between">
+              <div>
+                <h6 class="fw-bold mb-1 text-dark text-truncate" title="${item.name}">${item.name}</h6>
+                <div class="small text-muted mb-1" style="font-size:0.75rem;"><i class="bi bi-clock"></i> ~${item.prepTime || 10} mnt</div>
+                <p class="small text-muted mb-2 line-clamp-2 d-none d-sm--webkit-box" style="font-size: 0.78rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  ${item.desc}
+                </p>
+              </div>
+              <div class="d-flex align-items-center justify-content-between mt-1 pt-2 border-top">
+                <span class="fw-bold text-danger" style="font-size:0.95rem;">Rp ${item.price.toLocaleString('id-ID')}</span>
+                <button class="btn btn-sm btn-outline-warning rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px; color: var(--primary); border-color: var(--primary);">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCategory(cat, btnEl, isEncoded = false) {
+      currentCategory = isEncoded ? decodeURIComponent(cat) : cat;
+      const buttons = document.querySelectorAll('.category-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (btnEl) {
+        btnEl.classList.add('active');
+      }
+      renderMenus();
+    }
+
+    function openItemModal(itemId) {
+      modalActiveItem = allMenus.find(m => m.id === itemId);
+      modalItemQty = 1;
+
+      document.getElementById('itemDetailName').innerText = modalActiveItem.name;
+      document.getElementById('itemDetailImg').src = modalActiveItem.image;
+      document.getElementById('itemDetailDesc').innerText = modalActiveItem.desc;
+      document.getElementById('itemDetailPrice').innerText = 'Rp ' + modalActiveItem.price.toLocaleString('id-ID');
+      document.getElementById('itemDetailPrep').innerHTML = `<i class="bi bi-clock-history"></i> Estimasi masak: ~${modalActiveItem.prepTime || 10} Menit`;
+      document.getElementById('modalQtyDisplay').innerText = modalItemQty;
+      document.getElementById('itemDetailNotes').value = '';
+
+      const spicySection = document.getElementById('levelPedasSection');
+      if (modalActiveItem.hasLevel) {
+        spicySection.style.display = 'block';
+        document.querySelectorAll('.level-btn').forEach((b, idx) => {
+          b.classList.toggle('active', idx === 0);
+          b.classList.toggle('btn-danger', idx === 0);
+          b.classList.toggle('text-white', idx === 0);
+        });
+      } else {
+        spicySection.style.display = 'none';
+      }
+
+      const tempSection = document.getElementById('tempSection');
+      if (modalActiveItem.category === 'Coffee') {
+        tempSection.style.display = 'block';
+      } else {
+        tempSection.style.display = 'none';
+      }
+
+      new bootstrap.Modal(document.getElementById('modalItemDetail')).show();
+    }
+
+    function changeModalQty(delta) {
+      if (modalItemQty + delta >= 1) {
+        modalItemQty += delta;
+        document.getElementById('modalQtyDisplay').innerText = modalItemQty;
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('level-btn')) {
+        document.querySelectorAll('.level-btn').forEach(b => {
+          b.classList.remove('active', 'btn-danger', 'text-white');
+          b.classList.add('btn-outline-secondary');
+        });
+        e.target.classList.add('active', 'btn-danger', 'text-white');
+        e.target.classList.remove('btn-outline-secondary');
+      }
+
+      if (e.target.classList.contains('temp-btn')) {
+        document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+      }
+    });
+
+    document.getElementById('btnAddItemConfirm').addEventListener('click', () => {
+      let variant = '';
+      if (modalActiveItem.hasLevel) {
+        const activeLevel = document.querySelector('.level-btn.active');
+        variant = activeLevel ? activeLevel.getAttribute('data-level') : 'Level 0';
+      } else if (modalActiveItem.category === 'Coffee') {
+        const activeTemp = document.querySelector('.temp-btn.active');
+        variant = activeTemp ? activeTemp.getAttribute('data-temp') : 'Dingin (Ice)';
+      }
+
+      const notes = document.getElementById('itemDetailNotes').value.trim();
+
+      const existing = cart.find(c => c.id === modalActiveItem.id && c.variant === variant && c.notes === notes);
+      if (existing) {
+        existing.qty += modalItemQty;
+      } else {
+        cart.push({
+          id: modalActiveItem.id,
+          name: modalActiveItem.name,
+          price: modalActiveItem.price,
+          qty: modalItemQty,
+          variant: variant,
+          notes: notes
+        });
+      }
+
+      updateCartUI();
+      bootstrap.Modal.getInstance(document.getElementById('modalItemDetail')).hide();
+    });
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((acc, curr) => acc + curr.qty, 0);
+      const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+      const tax = Math.round(subtotal * 0.10);
+      const grandTotal = subtotal + tax;
+
+      document.getElementById('cartCountText').innerText = `${totalCount} Menu dipilih`;
+      document.getElementById('cartTotalText').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+
+      document.getElementById('billSubtotal').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+      document.getElementById('billTax').innerText = 'Rp ' + tax.toLocaleString('id-ID');
+      document.getElementById('billTotal').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+
+      const cartList = document.getElementById('cartItemsList');
+      if (cart.length === 0) {
+        cartList.innerHTML = `<div class="text-center py-4 text-muted">Keranjang masih kosong.</div>`;
+        return;
+      }
+
+      cartList.innerHTML = cart.map((item, idx) => `
+        <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+          <div class="me-2 flex-grow-1">
+            <h6 class="mb-0 fw-bold small">${item.name}</h6>
+            ${item.variant ? `<div class="badge bg-danger-subtle text-danger" style="font-size:0.7rem;">${item.variant}</div>` : ''}
+            ${item.notes ? `<div class="text-muted" style="font-size:0.75rem;">Ket: ${item.notes}</div>` : ''}
+            <div class="text-secondary small">Rp ${item.price.toLocaleString('id-ID')} x ${item.qty}</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-light border px-2 py-0" onclick="updateCartItemQty(${idx}, -1)">-</button>
+            <span class="fw-bold small">${item.qty}</span>
+            <button class="btn btn-sm btn-light border px-2 py-0" onclick="updateCartItemQty(${idx}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCartItemQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    function setupTableGrid() {
+      const grid = document.getElementById('tableGrid');
+      let html = '';
+      for (let i = 1; i <= 20; i++) {
+        html += `
+          <div class="col-3">
+            <button class="btn btn-outline-dark w-100 py-3 fw-bold rounded-3" onclick="selectTableFromModal(${i})">
+              Meja ${i}
+            </button>
+          </div>
+        `;
+      }
+      grid.innerHTML = html;
+    }
+
+    function selectTableFromModal(num) {
+      setTable(num);
+      bootstrap.Modal.getInstance(document.getElementById('modalTableSelect')).hide();
+    }
+
+    function startScannerModal() {
+      const tableModal = bootstrap.Modal.getInstance(document.getElementById('modalTableSelect'));
+      if (tableModal) tableModal.hide();
+
+      const scannerModal = new bootstrap.Modal(document.getElementById('modalScanner'));
+      scannerModal.show();
+
+      setTimeout(() => {
+        html5QrScanner = new Html5Qrcode("reader");
+        html5QrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            document.getElementById('scanResult').innerText = `Terdeteksi: ${decodedText}`;
+            stopScanner();
+            scannerModal.hide();
+
+            try {
+              if (decodedText.includes('table=')) {
+                const url = new URL(decodedText);
+                const tableVal = url.searchParams.get('table');
+                if (tableVal) setTable(parseInt(tableVal));
+              } else if (!isNaN(decodedText)) {
+                setTable(parseInt(decodedText));
+              } else {
+                alert("QR Terdeteksi: " + decodedText);
+              }
+            } catch (e) {
+              alert("QR Meja Terdeteksi: " + decodedText);
+            }
+          },
+          (errorMessage) => {}
+        ).catch(err => {
+          document.getElementById('scanResult').innerText = "Gagal menyalakan kamera: " + err;
+        });
+      }, 500);
+    }
+
+    function stopScanner() {
+      if (html5QrScanner) {
+        html5QrScanner.stop().then(() => html5QrScanner.clear()).catch(() => {});
+      }
+    }
+
+    document.getElementById('btnOpenScanner').addEventListener('click', startScannerModal);
+
+    const custNameField = document.getElementById('custNameInput');
+    if (custNameField) {
+      custNameField.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+          this.classList.remove('is-invalid');
+          const errEl = document.getElementById('custNameError');
+          if (errEl) errEl.style.display = 'none';
+        }
+      });
+    }
+
+    // Kirim Pesanan (Checkout)
+    document.getElementById('btnSubmitOrder').addEventListener('click', async () => {
+      if (cart.length === 0) {
+        alert("Keranjang masih kosong! Silakan pilih makanan / minuman terlebih dahulu.");
+        return;
+      }
+
+      if (!selectedTable) {
+        alert("Pilih nomor meja terlebih dahulu sebelum memesan!");
+        bootstrap.Modal.getInstance(document.getElementById('modalCart')).hide();
+        new bootstrap.Modal(document.getElementById('modalTableSelect')).show();
+        return;
+      }
+
+      // 2. VALIDASI KETAT: NAMA PEMESAN WAJIB DIISI!
+      const custNameInput = document.getElementById('custNameInput');
+      const custName = custNameInput.value.trim();
+
+      if (!custName) {
+        custNameInput.classList.add('is-invalid');
+        document.getElementById('custNameError').style.display = 'block';
+        custNameInput.focus();
+        alert("⚠️ Nama Pemesan Wajib Diisi!\n\nSilakan ketik nama Anda terlebih dahulu sebelum melanjutkan pesanan.");
+        return;
+      } else {
+        custNameInput.classList.remove('is-invalid');
+        document.getElementById('custNameError').style.display = 'none';
+      }
+
+      const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
+      const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+      const tax = Math.round(subtotal * 0.10);
+      const totalAmount = subtotal + tax;
+
+      const payload = {
+        tableNumber: selectedTable,
+        customerName: custName,
+        items: cart,
+        paymentMethod: payMethod,
+        totalAmount: totalAmount
+      };
+
+      try {
+        const btn = document.getElementById('btnSubmitOrder');
+        btn.disabled = true;
+        btn.innerText = "Memproses Pesanan...";
+
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const resData = await response.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send-check me-1"></i> Konfirmasi & Bayar Sekarang';
+
+        if (resData.success) {
+          bootstrap.Modal.getInstance(document.getElementById('modalCart')).hide();
+          
+          currentActiveOrderId = resData.order.id;
+          localStorage.setItem('cafe_active_order_id', currentActiveOrderId);
+          paymentSuccessNotified = false;
+          orderCompletedNotified = false;
+
+          cart = [];
+          updateCartUI();
+
+          const isPaidDirectly = resData.order.paymentStatus === 'PAID';
+          if (isPaidDirectly) {
+            // Jika pembayaran langsung lunas (misal tunai/otomatis)
+            paymentSuccessNotified = true;
+            showPaymentSuccessModal(resData.order);
+          } else {
+            // Tampilkan modal bayar (QRIS / Bank / Kasir)
+            openActiveOrderModal();
+          }
+
+          startOrderPolling();
+        } else {
+          alert("Gagal memproses pesanan: " + resData.message);
+        }
+      } catch (err) {
+        alert("Terjadi kesalahan koneksi ke server cafe.");
+      }
+    });
+
+    async function openActiveOrderModal() {
+      if (!currentActiveOrderId) return;
+      await fetchTrackStatus();
+      new bootstrap.Modal(document.getElementById('modalLiveTracking')).show();
+    }
+
+    async function fetchTrackStatus() {
+      if (!currentActiveOrderId) return;
+      try {
+        const res = await fetch(`/api/orders/${currentActiveOrderId}?table=${selectedTable || ''}`);
+        const data = await res.json();
+
+        if (!data.success || !data.order) {
+          // Pesanan tidak ditemukan / telah diarsipkan
+          localStorage.removeItem('cafe_active_order_id');
+          currentActiveOrderId = null;
+          document.getElementById('btnActiveOrderBadge').style.display = 'none';
+          if (pollingTimer) {
+            clearInterval(pollingTimer);
+            pollingTimer = null;
+          }
+          return;
+        }
+
+        const order = data.order;
+
+        // ================= ATURAN 1: PESANAN SELESAI DIKONFIRMASI DAPUR =================
+        // Pesanan yang sudah selesai dikonfirmasi dari dapur TIDAK AKAN MUNCUL di status dapur lagi di meja customer
+        if (order.status === 'Selesai') {
+          if (pollingTimer) {
+            clearInterval(pollingTimer);
+            pollingTimer = null;
+          }
+          localStorage.removeItem('cafe_active_order_id');
+          currentActiveOrderId = null;
+
+          // Sembunyikan tombol Status Dapur di meja customer
+          document.getElementById('btnActiveOrderBadge').style.display = 'none';
+
+          // Tutup modal status dapur jika sedang terbuka
+          const liveModal = bootstrap.Modal.getInstance(document.getElementById('modalLiveTracking'));
+          if (liveModal) {
+            liveModal.hide();
+          }
+
+          // Munculkan notifikasi perayaan selesai
+          if (!orderCompletedNotified) {
+            orderCompletedNotified = true;
+            showOrderCompletedModal(order);
+          }
+          return;
+        }
+
+        // ================= ATURAN 2: PEMBAYARAN LUNAS (PAID) =================
+        const isPaid = order.paymentStatus === 'PAID' || order.status.includes('Sudah Dibayar') || order.status === 'Sedang Dimasak' || order.status === 'Siap Disajikan';
+
+        // Jika baru pertama kali terdeteksi PAID (misal webhook QRIS berhasil), munculkan notifikasi sukses bayar
+        if (isPaid && !paymentSuccessNotified) {
+          paymentSuccessNotified = true;
+          const liveModal = bootstrap.Modal.getInstance(document.getElementById('modalLiveTracking'));
+          if (liveModal) {
+            liveModal.hide();
+          }
+          showPaymentSuccessModal(order);
+        }
+
+        // Tombol Status Dapur di header aktif selama pesanan belum 'Selesai'
+        document.getElementById('btnActiveOrderBadge').style.display = 'inline-block';
+        renderTrackingUI(order);
+
+      } catch (e) {
+        console.error('Error saat update status antrean:', e);
+      }
+    }
+
+    function renderTrackingUI(order) {
+      document.getElementById('trackModalTitle').innerHTML = `<i class="bi bi-clock-history text-danger me-1"></i> Status Dapur Meja ${order.tableNumber}`;
+      document.getElementById('trackOrderId').innerText = `ID: #${order.id}`;
+      document.getElementById('trackEstimatedTime').innerText = `~${order.estimatedMinutes || 10} Menit`;
+      
+      const readyTime = new Date(order.estimatedReadyTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('trackTargetClock').innerText = `Target Siap Disajikan: ${readyTime} WIB (${order.status})`;
+
+      const isPaid = order.paymentStatus === 'PAID' || order.status.includes('Sudah Dibayar') || order.status === 'Sedang Dimasak' || order.status === 'Siap Disajikan' || order.status === 'Selesai';
+
+      const waitingBanner = document.getElementById('waitingPaymentBanner');
+      const qrisBox = document.getElementById('trackQrisBox');
+      const bankBox = document.getElementById('trackBankBox');
+      const cashBox = document.getElementById('trackCashBox');
+
+      // SEMBUNYIKAN SEMUA ELEMEN PEMBAYARAN TERLEBIH DAHULU
+      waitingBanner.style.display = 'none';
+      qrisBox.style.display = 'none';
+      bankBox.style.display = 'none';
+      cashBox.style.display = 'none';
+
+      // ================= ATURAN 3: STATUS SUDAH BAYAR =================
+      // Saat cek status dapur lagi: HANYA menampilkan status dapur saja (estimasi + timeline dapur + rincian menu)
+      // TANPA muncul informasi pembayaran berhasil dan info pembayaran qris!
+      if (!isPaid) {
+        // Belum bayar: Munculkan instruksi bayar sesuai metode pembayaran
+        waitingBanner.style.display = 'block';
+
+        if (order.paymentMethod === 'Kasir') {
+          cashBox.style.display = 'block';
+          document.getElementById('waitingPaymentSubtext').innerText = 'Silakan sebutkan nomor meja Anda ke kasir untuk proses pembayaran tunai/EDC.';
+          document.getElementById('waitingPaymentBadge').innerText = 'BAYAR DI KASIR: BELUM LUNAS';
+        } else if (order.paymentMethod === 'Transfer Bank') {
+          bankBox.style.display = 'block';
+          document.getElementById('waitingPaymentSubtext').innerText = 'Silakan transfer m-Banking sesuai nominal di bawah.';
+          document.getElementById('waitingPaymentBadge').innerText = 'TRANSFER BANK: BELUM DIVERIFIKASI';
+          document.getElementById('trackTotalPayBank').innerText = 'Rp ' + order.totalAmount.toLocaleString('id-ID');
+          if (cafePaymentConfig) {
+            document.getElementById('displayBankName').innerText = cafePaymentConfig.bankName;
+            document.getElementById('displayBankAccount').innerText = cafePaymentConfig.bankAccountNumber;
+            document.getElementById('displayBankHolder').innerText = cafePaymentConfig.bankAccountHolder;
+            document.getElementById('displayBankNotes').innerText = cafePaymentConfig.bankNotes;
+          }
+        } else {
+          // QRIS
+          qrisBox.style.display = 'block';
+          document.getElementById('waitingPaymentSubtext').innerText = 'Silakan scan kode QRIS di bawah melalui GoPay, OVO, ShopeePay, DANA atau Mobile Banking Anda.';
+          document.getElementById('waitingPaymentBadge').innerText = 'QRIS GATEWAY: BELUM DIBAYAR';
+          document.getElementById('trackTotalPayQris').innerText = 'Rp ' + order.totalAmount.toLocaleString('id-ID');
+          document.getElementById('qrisStatusPill').className = 'badge bg-warning text-dark';
+          document.getElementById('qrisStatusPill').innerText = 'Menunggu Scan';
+          if (cafePaymentConfig) {
+            document.getElementById('displayQrisMerchant').innerText = cafePaymentConfig.qrisMerchantName;
+            document.getElementById('displayQrisNmid').innerText = 'NMID: ' + cafePaymentConfig.qrisNmid;
+            document.getElementById('displayQrisImg').src = cafePaymentConfig.qrisCustomImageUrl;
+            document.getElementById('displayQrisNotes').innerText = cafePaymentConfig.qrisNotes;
+          }
+        }
+      }
+
+      // Visual Timeline Proses Dapur (Fokus Utama Status Dapur)
+      const timelineBox = document.getElementById('kitchenTimelineContainer');
+      const steps = [
+        { label: 'Pesanan Diterima Sistem', desc: 'Pesanan masuk ke antrean cafe', icon: 'bi-receipt' },
+        { label: 'Konfirmasi Pembayaran', desc: order.paymentMethod, icon: 'bi-credit-card-2-front' },
+        { label: 'Koki & Barista Memasak', desc: 'Makanan & minuman sedang diracik di dapur', icon: 'bi-fire' },
+        { label: 'Siap Disajikan ke Meja', desc: `Pelayan menuju Meja ${order.tableNumber}`, icon: 'bi-cup-hot' }
+      ];
+
+      timelineBox.innerHTML = steps.map((s, idx) => {
+        const itemTL = order.kitchenTimeline[idx];
+        const isDone = itemTL && itemTL.completed;
+        const isCurrent = !isDone && (idx === 0 || (order.kitchenTimeline[idx - 1] && order.kitchenTimeline[idx - 1].completed));
+
+        let stateClass = '';
+        if (isDone) stateClass = 'done';
+        else if (isCurrent) stateClass = 'current';
+
+        return `
+          <div class="timeline-step ${stateClass}">
+            <div class="timeline-icon">
+              <i class="bi ${isDone ? 'bi-check-lg' : s.icon}"></i>
+            </div>
+            <div>
+              <h6 class="mb-0 fw-bold small text-dark">${s.label}</h6>
+              <div class="text-muted" style="font-size:0.75rem;">${s.desc}</div>
+              ${itemTL && itemTL.time !== '-' ? `<span class="badge bg-light text-dark border small mt-1" style="font-size:0.65rem;">${itemTL.time} WIB</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Rincian hidangan yang sedang dimasak
+      const itemsSummary = order.items.map(i => `${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}`).join(', ');
+      document.getElementById('trackItemsSummary').innerText = itemsSummary;
+    }
+
+    function showPaymentSuccessModal(order) {
+      if (successBannerConfig) {
+        document.getElementById('bannerSuccessTitle').innerText = successBannerConfig.title;
+        document.getElementById('bannerSuccessMsg').innerText = successBannerConfig.message;
+        document.getElementById('bannerSubMsg').innerText = successBannerConfig.subMessage;
+        document.getElementById('bannerSocialText').innerText = successBannerConfig.socialText || '';
+
+        if (successBannerConfig.showImage && successBannerConfig.imageUrl) {
+          document.getElementById('bannerCustomImg').src = successBannerConfig.imageUrl;
+          document.getElementById('bannerImgWrapper').style.display = 'block';
+        } else {
+          document.getElementById('bannerImgWrapper').style.display = 'none';
+        }
+      }
+      new bootstrap.Modal(document.getElementById('modalPaymentSuccess')).show();
+    }
+
+    function openKitchenTrackFromSuccess() {
+      const successModal = bootstrap.Modal.getInstance(document.getElementById('modalPaymentSuccess'));
+      if (successModal) successModal.hide();
+      openActiveOrderModal();
+    }
+
+    function showOrderCompletedModal(order) {
+      document.getElementById('orderCompletedMsg').innerText = `Semua hidangan untuk Meja ${order.tableNumber} (#${order.id}) telah selesai dimasak oleh koki dapur dan dihidangkan ke meja Anda.`;
+      new bootstrap.Modal(document.getElementById('modalOrderCompleted')).show();
+    }
+
+    function copyBankAccount() {
+      const acc = document.getElementById('displayBankAccount').innerText;
+      navigator.clipboard.writeText(acc).then(() => {
+        alert("Nomor rekening berhasil disalin: " + acc);
+      });
+    }
+
+    async function verifyCustomerPaymentNow() {
+      const btn = document.getElementById('btnCheckQrisPaymentStatus');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengecek Pembayaran ke Gateway...';
+
+      try {
+        const res = await fetch(`/api/orders/${currentActiveOrderId}?table=${selectedTable || ''}`);
+        const data = await res.json();
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Saya Sudah Bayar (Cek Status Pembayaran)';
+
+        if (data.success && data.order) {
+          const isPaid = data.order.paymentStatus === 'PAID' || data.order.status.includes('Sudah Dibayar') || data.order.status === 'Sedang Dimasak';
+          if (isPaid) {
+            paymentSuccessNotified = true;
+            // Tutup modal tracking QRIS jika sedang terbuka
+            const trackModal = bootstrap.Modal.getInstance(document.getElementById('modalLiveTracking'));
+            if (trackModal) trackModal.hide();
+
+            // Tampilkan modal notifikasi pembayaran berhasil
+            showPaymentSuccessModal(data.order);
+          } else {
+            alert('⏳ Pembayaran belum terdeteksi dari Payment Gateway.\n\nPastikan Anda sudah menyelesaikan transaksi QRIS di aplikasi dompet digital / m-Banking Anda.');
+          }
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i> Saya Sudah Bayar (Cek Status Pembayaran)';
+        alert('Terjadi kesalahan koneksi saat mengecek status pembayaran.');
+      }
+    }
+
+    let pollingTimer = null;
+    function startOrderPolling() {
+      if (pollingTimer) clearInterval(pollingTimer);
+      pollingTimer = setInterval(fetchTrackStatus, 3000);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initTableFromUrl();
+      setupTableGrid();
+      loadPaymentConfig();
+      loadSuccessBannerConfig();
+      loadMenu();
+      if (currentActiveOrderId) {
+        fetchTrackStatus();
+        startOrderPolling();
+      }
+    });
+  </script>
+</body>
+</html>
